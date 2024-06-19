@@ -40,7 +40,7 @@ Route::get('/generate-report', [GuestController::class, 'generateReport'])->name
 Route::post('/guest/log/new/{guestId}', [GuestLogController::class, 'store'])->name('guest.log.store');
 Route::get('/guest/log/new', [GuestLogController::class, 'create'])->name('guestlog.create');
 Route::get('/guest/logs', [GuestLogController::class, 'index'])->name('guest.log.index');
-Route::get('/guest/logs/all', [GuestLogController::class, 'show'])->name('guest.log.show');
+Route::get('/guest/logs/check-out/{guestLogId}', [GuestLogController::class, 'show'])->name('guest.log.show');
 Route::delete('/guests/logs/{guestId}', [GuestLogController::class, 'destroy'])->name('guest.log.destroy');
 Route::post('/guest/log/check-out/{guestLog}', [GuestLogController::class, 'checkOut'])->name('guest.log.checkout');
 Route::get('/generate-report-guestlog', [GuestLogController::class, 'generateReport'])->name('guestlog.generateReport');
@@ -60,8 +60,3 @@ Route::get('/upload/all', [UploadController::class, 'show']);
 Route::delete('/uploads/{id}', [UploadController::class, 'destroy']);
 
 require __DIR__ . '/auth.php';
-
-
-Route::get('/guest/log/check-out-via-qr/{guestLog}', [GuestLogController::class, 'checkOutViaQr'])
-    ->name('guest.log.checkOutViaQr');
-

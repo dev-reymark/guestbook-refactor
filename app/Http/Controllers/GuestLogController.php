@@ -23,10 +23,6 @@ class GuestLogController extends Controller
             'purpose_of_visit' => 'nullable|string|max:255',
             'check_in_time' => 'required|date',
             'check_out_time' => 'nullable|date',
-            'guest_items' => 'array',
-            'guest_items.*.item_name' => 'nullable|string|max:255',
-            'guest_items.*.quantity' => 'nullable|integer|min:1',
-            'guest_items.*.remarks' => 'nullable|string|max:255',
         ]);
 
         // Create guest log entry
@@ -34,16 +30,10 @@ class GuestLogController extends Controller
         $guestLogData['guest_id'] = $guestId;
         $guestLog = GuestLog::create($guestLogData);
 
-        // Store guest items
-        foreach ($request->guest_items as $item) {
-            $guestLog->guestItems()->create([
-                'item_name' => $item['item_name'],
-                'quantity' => $item['quantity'],
-                'remarks' => $item['remarks'],
-            ]);
-        }
+        // Assuming the route name for the checkout page is 'guest.checkout'
+        $qrCodeUrl = route('guest.log.show', ['guestLogId' => $guestLog->id]);
 
-        return redirect()->route('guest.log.index')->with('success', 'Guest log created successfully!');
+        return response()->json(['guestLogId' => $guestLog->id, 'qrCodeUrl' => $qrCodeUrl]);
     }
 
 
@@ -56,14 +46,16 @@ class GuestLogController extends Controller
         ]);
     }
 
-    public function show()
+    public function show($guestLogId)
     {
-        $guestLogs = GuestLog::with('guest')->get();
-        return inertia('CheckOut', [
-            'guestLogs' => $guestLogs
+        $guestLog = GuestLog::with('guest')->findOrFail($guestLogId);
+        $checkoutUrl = route('guest.log.checkout', ['guestLog' => $guestLogId]);
+        return inertia('GuestLog/CheckOut', [
+            'guestLog' => $guestLog,
+            'guestLogId' => $guestLogId,
+            'checkoutUrl' => $checkoutUrl
         ]);
     }
-
     public function destroy($id)
     {
         $guestLog = GuestLog::findOrFail($id);
@@ -79,10 +71,9 @@ class GuestLogController extends Controller
 
     public function checkOut(GuestLog $guestLog)
     {
-        // Update the check-out time for the specified guest log
         $guestLog->update(['check_out_time' => now()]);
 
-        return redirect()->route('guest.log.show')->with('success', 'Guest checked out successfully!');
+        return redirect()->route('guest.log.show', ['guestLogId' => $guestLog->id])->with('success', 'Guest checked out successfully!');
     }
 
     public function generateReport(Request $request)
@@ -136,14 +127,5 @@ class GuestLogController extends Controller
         }
 
         return response()->json($data);
-    }
-
-    public function checkOutViaQr(Request $request, GuestLog $guestLog)
-    {
-        // Update the check-out time for the guest log entry
-        $guestLog->update(['check_out_time' => $request->input('checkOutTime')]);
-
-        // Optionally, you can return a response indicating success
-        return response()->json(['message' => 'Guest checked out successfully']);
     }
 }

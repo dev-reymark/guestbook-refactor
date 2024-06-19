@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Head } from "@inertiajs/react";
 import {
     Autocomplete,
@@ -9,14 +9,32 @@ import {
     SelectItem,
     Spacer,
 } from "@nextui-org/react";
-import { Inertia } from "@inertiajs/inertia";
+import axios from "axios";
 import Swal from "sweetalert2";
 import GuestRegisterForm from "../Guest/GuestRegisterForm";
-import QRCode from "qrcode";
-import ReactDOMServer from "react-dom/server";
-import { meetingWithOptions, purposeOfVisitOptions } from "@/Components/Data";
+import QRCode from "qrcode.react";
 
-export default function GuestLogForm({ guests }) {
+const meetingWithOptions = [
+    {
+        value: "Ricardo Yap",
+        label: "Ricardo Yap",
+        position: "President/CEO",
+        avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/male/1.png",
+    },
+    {
+        value: "Edwin Yap",
+        label: "Edwin Yap",
+        position: "General Manager",
+        avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/male/1.png",
+    },
+];
+
+const purposeOfVisitOptions = [
+    { value: "Business Meeting", label: "Business Meeting" },
+    { value: "Job Interview", label: "Job Interview" },
+];
+
+const GuestLogForm = ({ guests }) => {
     const [selectedGuestId, setSelectedGuestId] = useState("");
     const [searchValue, setSearchValue] = useState("");
     const [values, setValues] = useState({
@@ -25,6 +43,8 @@ export default function GuestLogForm({ guests }) {
         check_in_time: "",
         check_out_time: "",
     });
+    const [qrCodeUrl, setQrCodeUrl] = useState("");
+    const [showQrCode, setShowQrCode] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -34,18 +54,14 @@ export default function GuestLogForm({ guests }) {
         });
     };
 
-    const handleGuestChange = (e) => {
-        setSelectedGuestId(e.target.value);
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         const checkInTime = new Date(values.check_in_time)
             .toISOString()
             .slice(0, 19)
             .replace("T", " ");
-
+    
         const formData = {
             ...values,
             check_in_time: checkInTime.toString(),
@@ -53,58 +69,26 @@ export default function GuestLogForm({ guests }) {
                 ? new Date(values.check_out_time).toISOString()
                 : null,
         };
-
-        Inertia.post(`/guest/log/new/${selectedGuestId}`, formData);
-
-        Swal.fire({
-            title: "Success!",
-            text: "Your log for today has been created successfully!",
-            icon: "success",
-            confirmButtonText: "OK",
-        });
-
-        // Generate QR code
-        const qrCodeValue = `${selectedGuestId}, ${values.meeting_with}, ${
-            values.purpose_of_visit
-        }, ${values.check_in_time}, ${new Date().toISOString()}`;
-        const qrCodeUrl = await QRCode.toDataURL(qrCodeValue);
-
-        // Open a new window with the visitor pass
-        const printWindow = window.open(
-            "",
-            "PrintWindow",
-            "width=600,height=600"
-        );
-
-        const printableContent = ReactDOMServer.renderToString(
-            <PrintablePass
-                guestName={selectedGuestId}
-                meetingWith={values.meeting_with}
-                purposeOfVisit={values.purpose_of_visit}
-                checkInTime={values.check_in_time}
-                checkOutTime={values.check_out_time}
-                guestItems={[]} // Adjust as necessary
-                qrCodeUrl={qrCodeUrl}
-            />
-        );
-
-        printWindow.document.write(
-            "<html><head><title>Visitor Pass</title></head><body>"
-        );
-        printWindow.document.write(printableContent);
-        printWindow.document.write("</body></html>");
-
-        printWindow.document.close();
-        // Trigger the print dialog
-        printWindow.onload = () => {
-            printWindow.print();
-            printWindow.onafterprint = () => {
-                printWindow.close();
-            };
-        };
-
-        Inertia.visit(route("guest.log.show"));
+    
+        try {
+            const response = await axios.post(
+                `/guest/log/new/${selectedGuestId}`,
+                formData
+            );
+            const guestLogId = response.data.guestLogId;
+            const qrCodeUrl = response.data.qrCodeUrl; // Assuming this is returned from the backend
+    
+            setQrCodeUrl(qrCodeUrl);
+            setShowQrCode(true);
+        } catch (error) {
+            Swal.fire(
+                "Error",
+                "There was an error submitting the form",
+                "error"
+            );
+        }
     };
+    
 
     const handleCheckIn = () => {
         const today = new Date();
@@ -127,75 +111,12 @@ export default function GuestLogForm({ guests }) {
         )
         .sort((a, b) => a.name.localeCompare(b.name));
 
-    useEffect(() => {
-        const timeout = setTimeout(() => {
-            Inertia.visit("/", { replace: true });
-        }, 30000);
-
-        const resetTimeout = () => {
-            clearTimeout(timeout);
-        };
-
-        window.addEventListener("mousemove", resetTimeout);
-        window.addEventListener("keydown", resetTimeout);
-
-        return () => {
-            clearTimeout(timeout);
-            window.removeEventListener("mousemove", resetTimeout);
-            window.removeEventListener("keydown", resetTimeout);
-        };
-    }, []);
-
-    // Handle QR code scanning
-    const handleQRScan = async (qrCodeData) => {
-        // Extract necessary information from the QR code data
-        const guestLogId = extractGuestLogIdFromQR(qrCodeData);
-
-        // Update check-out time locally
-        const checkOutTime = new Date().toISOString(); // Current time
-
-        // Send request to server to update check-out time
-        try {
-            const response = await fetch(
-                `/guest/log/check-out-via-qr/${guestLogId}`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        // Add any necessary authentication headers
-                    },
-                    body: JSON.stringify({ checkOutTime }),
-                }
-            );
-
-            if (response.ok) {
-                // Handle success, e.g., display a success message
-                Swal.fire({
-                    title: "Success!",
-                    text: "Checked out successfully!",
-                    icon: "success",
-                    confirmButtonText: "OK",
-                });
-            } else {
-                // Handle error response
-                // Display error message or handle as needed
-                console.error(
-                    "Error updating check-out time:",
-                    response.statusText
-                );
-            }
-        } catch (error) {
-            // Handle fetch error
-            console.error("Error updating check-out time:", error.message);
-        }
-    };
-
     return (
         <div className="min-h-screen bg-[url(/assets/images/bg.png)] bg-cover">
             <Head title="Log Guest" />
-            <div className="py-12 flex justify-center items-center">
+            <div className="py-12 p-4 flex justify-center items-center">
                 <div className="max-w-3xl mx-auto p-4 bg-white shadow-md rounded-lg py-5">
-                    <div className="text-center mb-5">
+                    <div className="text-center  mb-5">
                         <h2 className="text-3xl font-bold mb-4 ">
                             <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary relative">
                                 Guest Log Form
@@ -232,6 +153,7 @@ export default function GuestLogForm({ guests }) {
                                     </AutocompleteItem>
                                 ))}
                             </Autocomplete>
+
                             <GuestRegisterForm />
                         </div>
                         <Spacer y={2} />
@@ -340,45 +262,23 @@ export default function GuestLogForm({ guests }) {
                     </form>
                 </div>
             </div>
-        </div>
-    );
-}
 
-const PrintablePass = ({
-    guestName,
-    meetingWith,
-    purposeOfVisit,
-    checkInTime,
-    checkOutTime,
-    qrCodeUrl,
-}) => {
-    return (
-        <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-            <h1>Visitor Pass</h1>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <div style={{ flex: "1 1 50%" }}>
-                    <p>
-                        <strong>Guest Name:</strong> {guestName}
-                    </p>
-                    <p>
-                        <strong>Meeting With:</strong> {meetingWith}
-                    </p>
-                    <p>
-                        <strong>Purpose of Visit:</strong> {purposeOfVisit}
-                    </p>
-                    <p>
-                        <strong>Check In Time:</strong> {checkInTime}
-                    </p>
-                    {checkOutTime && (
-                        <p>
-                            <strong>Check Out Time:</strong> {checkOutTime}
-                        </p>
-                    )}
+            {showQrCode && (
+                <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
+                    <div className="bg-white p-6 rounded-lg max-w-md">
+                        <QRCode value={qrCodeUrl} size={150} />
+                        <Button
+                            color="primary"
+                            onClick={() => setShowQrCode(false)}
+                            className="block mt-4 w-full text-white font-bold py-2 px-4 rounded"
+                        >
+                            Close QR Code
+                        </Button>
+                    </div>
                 </div>
-                <div style={{ flex: "1 1 50%", textAlign: "right" }}>
-                    <img src={qrCodeUrl} alt="QR Code" />
-                </div>
-            </div>
+            )}
         </div>
     );
 };
+
+export default GuestLogForm;

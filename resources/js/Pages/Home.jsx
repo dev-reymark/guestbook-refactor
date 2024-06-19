@@ -26,7 +26,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
         width: 100%;
         height: 100%;
     }
-`}</style>
+`}</style>;
 
 // Import Swiper styles
 import "swiper/css";
@@ -100,7 +100,12 @@ export default function Home({ auth, mediaUrls = [] }) {
     return (
         <>
             <Head title="Home" />
-            <audio ref={audioRef} src="/assets/audio/datalogic.mp3" autoPlay loop></audio>
+            <audio
+                ref={audioRef}
+                src="/assets/audio/datalogic.mp3"
+                autoPlay
+                loop
+            ></audio>
             <div className="relative min-h-screen p-5">
                 <img
                     className="absolute inset-0 w-full h-full object-cover pointer-events-none"
@@ -200,7 +205,7 @@ export default function Home({ auth, mediaUrls = [] }) {
                                     </div>
                                 </Card>
 
-                                <Card as={Link} href={route("guest.log.show")}>
+                                <Card as={Link}>
                                     <div className="flex items-start gap-4 p-5 py-14">
                                         <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#FF6B6B]/10 sm:size-16">
                                             <FaSignOutAlt className="h-6 w-6 text-danger" />
@@ -364,22 +369,26 @@ export default function Home({ auth, mediaUrls = [] }) {
                                 </CardHeader>
                                 <Divider />
                                 <CardFooter>
-                                    <p className="text-sm">
-                                        <span className="font-bold text-md">
-                                            Privacy Notice: {"  "}
-                                        </span>
-                                        This kiosk collects personal information
-                                        from visitors and registers them as
-                                        guest. <br />
-                                        <br />
-                                        We are committed to protecting your
-                                        personal information and ensuring its
-                                        confidentiality. Any data collected
-                                        through this kiosk will be used solely
-                                        for the purpose stated and will not be
-                                        shared with third parties without your
-                                        consent, except where required by law.
-                                    </p>
+                                    <div>
+                                        <p className="mb-2">
+                                            <span className="font-bold text-md">
+                                                Privacy Notice: {"  "}
+                                            </span>
+                                            This kiosk collects personal
+                                            information from visitors and
+                                            registers them as guest/s.
+                                        </p>
+                                        <p>
+                                            We are committed to protecting your
+                                            personal information and ensuring
+                                            its confidentiality. Any data
+                                            collected through this kiosk will be
+                                            used solely for the purpose stated
+                                            and will not be shared with third
+                                            parties without your consent, except
+                                            where required by law.
+                                        </p>
+                                    </div>
                                 </CardFooter>
                             </Card>
                         </div>
