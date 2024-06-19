@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Inertia } from "@inertiajs/inertia";
+import axios from "axios";
 import { usePage } from "@inertiajs/react";
 import Swal from "sweetalert2";
 import { Head } from "@inertiajs/react";
@@ -16,33 +16,52 @@ import {
 const CheckOut = () => {
     const { guestLog, guestLogId, checkoutUrl } = usePage().props;
     const { isOpen, onOpen, onOpenChange } = useDisclosure(true);
-
-    const handleCheckOut = () => {
-        Inertia.post(
-            checkoutUrl,
-            {},
-            {
-                onSuccess: () => {
-                    Swal.fire({
-                        icon: "success",
-                        title: "Guest checked out successfully!",
-                    });
-                },
-                onError: (errors) => {
-                    Swal.fire({
-                        icon: "error",
-                        title: "An error occurred",
-                        text: "Please try again later.",
-                    });
-                    console.error(errors);
-                },
-            }
-        );
-    };
+    const [isCheckingOut, setIsCheckingOut] = useState(false);
 
     useEffect(() => {
-        onOpen();
-    }, [onOpen]);
+        // Show SweetAlert if guest has already checked out
+        if (guestLog.check_out_time) {
+            Swal.fire({
+                title: "Already Checked Out",
+                text: "This guest has already been checked out.",
+                icon: "warning",
+                confirmButtonText: "OK",
+            }).then(() => {
+                // Redirect to homepage after user clicks OK
+                window.location.href = "/";
+            });
+        } else {
+            onOpen(); // Open the modal if guest hasn't checked out
+        }
+    }, [guestLog.check_out_time, onOpen]);
+
+    const handleCheckOut = () => {
+        setIsCheckingOut(true);
+        axios
+            .post(checkoutUrl)
+            .then((response) => {
+                Swal.fire({
+                    title: "Success!",
+                    text: "You have successfully checked out.",
+                    icon: "success",
+                    confirmButtonText: "OK",
+                }).then(() => {
+                    window.location.href = "/"; // Redirect to homepage
+                });
+            })
+            .catch((error) => {
+                console.error("Checkout error:", error);
+                Swal.fire({
+                    title: "Error!",
+                    text: "An error occurred while checking out.",
+                    icon: "error",
+                    confirmButtonText: "OK",
+                });
+            })
+            .finally(() => {
+                setIsCheckingOut(false);
+            });
+    };
 
     if (!guestLog) {
         return <div>Loading...</div>;
@@ -57,6 +76,8 @@ const CheckOut = () => {
                 onOpenChange={onOpenChange}
                 placement="center"
                 hideCloseButton
+                isKeyboardDismissDisabled
+                isDismissable
             >
                 <ModalContent>
                     {() => (
@@ -151,8 +172,11 @@ const CheckOut = () => {
                                             <Button
                                                 color="primary"
                                                 onClick={handleCheckOut}
+                                                disabled={isCheckingOut}
                                             >
-                                                Check Out
+                                                {isCheckingOut
+                                                    ? "Checking Out..."
+                                                    : "Check Out"}
                                             </Button>
                                         )}
                                     </div>

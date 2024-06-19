@@ -14,6 +14,7 @@ import Swal from "sweetalert2";
 import GuestRegisterForm from "../Guest/GuestRegisterForm";
 import QRCode from "qrcode.react";
 import { Inertia } from "@inertiajs/inertia";
+import { FaPrint } from "react-icons/fa";
 
 const meetingWithOptions = [
     {
@@ -135,6 +136,40 @@ const GuestLogForm = ({ guests }) => {
         if (value !== "Other") {
             setOtherPurpose("");
         }
+    };
+
+    const handleClose = () => {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You are about to close this page. Please ensure that the QR code has been captured or printed.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, close it",
+            cancelButtonText: "Cancel",
+            cancelButtonColor: "#3085d6",
+            confirmButtonColor: "#d33",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Inertia.visit("/");
+            }
+        });
+    };
+
+    const downloadQrCode = (qrCodeUrl) => {
+        const canvas = document.querySelector("canvas");
+        const pngUrl = canvas
+            .toDataURL("image/png")
+            .replace("image/png", "image/octet-stream");
+
+        const link = document.createElement("a");
+        link.href = pngUrl;
+
+        const date = new Date().toISOString().slice(0, 10); // Get current date in YYYY-MM-DD format
+        link.download = `qr_code_generated_on_${date}.png`; // Include date in the filename
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     };
 
     return (
@@ -312,13 +347,21 @@ const GuestLogForm = ({ guests }) => {
                                 color="primary"
                                 variant="shadow"
                                 onClick={() => window.print()}
+                                className="hidden sm:block"
                             >
-                                Print
+                                <span className="flex items-center gap-2">
+                                    <FaPrint className="w-4 h-4 text-success" /> Print QR
+                                </span>
                             </Button>
                             <Button
-                                color="danger"
-                                onClick={() => Inertia.visit("/")}
+                                color="primary"
+                                variant="shadow"
+                                onClick={() => downloadQrCode(qrCodeUrl)}
+                                className="sm:hidden"
                             >
+                                Download QR
+                            </Button>
+                            <Button color="danger" onClick={handleClose}>
                                 Close
                             </Button>
                         </div>
