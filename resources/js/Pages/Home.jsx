@@ -369,8 +369,8 @@ export default function Home({ auth, mediaUrls = [] }) {
                                 </CardHeader>
                                 <Divider />
                                 <CardFooter>
-                                    <div>
-                                        <p className="mb-2">
+                                    <div className="mt-1">
+                                        <p>
                                             <span className="font-bold text-md">
                                                 Privacy Notice: {"  "}
                                             </span>

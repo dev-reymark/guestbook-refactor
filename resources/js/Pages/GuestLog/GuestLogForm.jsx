@@ -13,6 +13,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import GuestRegisterForm from "../Guest/GuestRegisterForm";
 import QRCode from "qrcode.react";
+import { Inertia } from "@inertiajs/inertia";
 
 const meetingWithOptions = [
     {
@@ -32,6 +33,7 @@ const meetingWithOptions = [
 const purposeOfVisitOptions = [
     { value: "Business Meeting", label: "Business Meeting" },
     { value: "Job Interview", label: "Job Interview" },
+    { value: "Other", label: "Other" }, // Added "Other" option
 ];
 
 const GuestLogForm = ({ guests }) => {
@@ -45,6 +47,7 @@ const GuestLogForm = ({ guests }) => {
     });
     const [qrCodeUrl, setQrCodeUrl] = useState("");
     const [showQrCode, setShowQrCode] = useState(false);
+    const [otherPurpose, setOtherPurpose] = useState(""); // State for other purpose input
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -56,28 +59,39 @@ const GuestLogForm = ({ guests }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         const checkInTime = new Date(values.check_in_time)
             .toISOString()
             .slice(0, 19)
             .replace("T", " ");
-    
+
         const formData = {
             ...values,
             check_in_time: checkInTime.toString(),
             check_out_time: values.check_out_time
                 ? new Date(values.check_out_time).toISOString()
                 : null,
+            purpose_of_visit:
+                values.purpose_of_visit === "Other"
+                    ? otherPurpose
+                    : values.purpose_of_visit,
         };
-    
+
         try {
             const response = await axios.post(
                 `/guest/log/new/${selectedGuestId}`,
                 formData
             );
             const guestLogId = response.data.guestLogId;
-            const qrCodeUrl = response.data.qrCodeUrl; // Assuming this is returned from the backend
-    
+            const qrCodeUrl = response.data.qrCodeUrl;
+
+            Swal.fire({
+                title: "Success",
+                icon: "success",
+                showConfirmButton: false,
+                timer: 1500,
+            });
+
             setQrCodeUrl(qrCodeUrl);
             setShowQrCode(true);
         } catch (error) {
@@ -88,7 +102,6 @@ const GuestLogForm = ({ guests }) => {
             );
         }
     };
-    
 
     const handleCheckIn = () => {
         const today = new Date();
@@ -110,6 +123,19 @@ const GuestLogForm = ({ guests }) => {
             guest.name.toLowerCase().includes(searchValue.toLowerCase())
         )
         .sort((a, b) => a.name.localeCompare(b.name));
+
+    const handlePurposeChange = (e) => {
+        const { value } = e.target;
+        setValues({
+            ...values,
+            purpose_of_visit: value,
+        });
+
+        // Reset otherPurpose when purpose changes
+        if (value !== "Other") {
+            setOtherPurpose("");
+        }
+    };
 
     return (
         <div className="min-h-screen bg-[url(/assets/images/bg.png)] bg-cover">
@@ -195,12 +221,7 @@ const GuestLogForm = ({ guests }) => {
                                 labelPlacement="outside"
                                 placeholder="Select Purpose"
                                 value={values.purpose_of_visit}
-                                onChange={(e) =>
-                                    setValues({
-                                        ...values,
-                                        purpose_of_visit: e.target.value,
-                                    })
-                                }
+                                onChange={handlePurposeChange}
                                 isRequired
                             >
                                 {purposeOfVisitOptions.map((option) => (
@@ -212,6 +233,18 @@ const GuestLogForm = ({ guests }) => {
                                     </SelectItem>
                                 ))}
                             </Select>
+                            <Spacer y={2} />
+                            {/* Render input for other purpose */}
+                            {values.purpose_of_visit === "Other" && (
+                                <Input
+                                    placeholder="Please input your purpose of visit"
+                                    value={otherPurpose}
+                                    onChange={(e) =>
+                                        setOtherPurpose(e.target.value)
+                                    }
+                                    isRequired
+                                />
+                            )}
                         </div>
                         <Spacer y={2} />
                         <div className="flex gap-4 mb-4">
@@ -264,16 +297,31 @@ const GuestLogForm = ({ guests }) => {
             </div>
 
             {showQrCode && (
-                <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
-                    <div className="bg-white p-6 rounded-lg max-w-md">
-                        <QRCode value={qrCodeUrl} size={150} />
-                        <Button
-                            color="primary"
-                            onClick={() => setShowQrCode(false)}
-                            className="block mt-4 w-full text-white font-bold py-2 px-4 rounded"
-                        >
-                            Close QR Code
-                        </Button>
+                <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-100 z-50">
+                    <div className="bg-white p-6 rounded-lg max-w-md space-y-4">
+                        <div className="flex justify-center">
+                            <h1>
+                                Please capture this QR code using your mobile
+                                phone or print it out. This will be used to log
+                                your visit.
+                            </h1>
+                        </div>
+                        <QRCode value={qrCodeUrl} size={400} />
+                        <div className="flex justify-end gap-1">
+                            <Button
+                                color="primary"
+                                variant="shadow"
+                                onClick={() => window.print()}
+                            >
+                                Print
+                            </Button>
+                            <Button
+                                color="danger"
+                                onClick={() => Inertia.visit("/")}
+                            >
+                                Close
+                            </Button>
+                        </div>
                     </div>
                 </div>
             )}
