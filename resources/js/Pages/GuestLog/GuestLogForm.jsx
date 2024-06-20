@@ -15,6 +15,8 @@ import GuestRegisterForm from "../Guest/GuestRegisterForm";
 import QRCode from "qrcode.react";
 import { Inertia } from "@inertiajs/inertia";
 import { FaPrint } from "react-icons/fa";
+import ReactDOMServer from "react-dom/server";
+import { MdSimCardDownload } from "react-icons/md";
 
 const meetingWithOptions = [
     {
@@ -90,7 +92,7 @@ const GuestLogForm = ({ guests }) => {
                 title: "Success",
                 icon: "success",
                 showConfirmButton: false,
-                timer: 1500,
+                timer: 1000,
             });
 
             setQrCodeUrl(qrCodeUrl);
@@ -172,11 +174,47 @@ const GuestLogForm = ({ guests }) => {
         document.body.removeChild(link);
     };
 
+    const printQrCode = () => {
+        const canvas = document.querySelector("canvas");
+        const qrCodeDataUrl = canvas.toDataURL("image/png");
+
+        const printableContent = ReactDOMServer.renderToString(
+            <PrintableGuestPass
+                guestName={selectedGuestId}
+                meetingWith={values.meeting_with}
+                purposeOfVisit={values.purpose_of_visit}
+                checkInTime={values.check_in_time}
+                checkOutTime={values.check_out_time}
+                qrCodeUrl={qrCodeDataUrl}
+            />
+        );
+
+        const printContentAsElement = () => {
+            const printWindow = window.open("", "Print Window");
+            printWindow.document.open();
+            printWindow.document.write(
+                "<html><head><title>Print</title></head><body>"
+            );
+            printWindow.document.write(printableContent);
+            printWindow.document.write("</body></html>");
+            printWindow.document.close();
+
+            printWindow.onload = function () {
+                printWindow.focus();
+                printWindow.print();
+                printWindow.close();
+            };
+        };
+
+        // Call print function when needed
+        printContentAsElement();
+    };
+
     return (
         <div className="min-h-screen bg-[url(/assets/images/bg.png)] bg-cover">
             <Head title="Log Guest" />
             <div className="py-12 p-4 flex justify-center items-center">
-                <div className="max-w-3xl mx-auto p-4 bg-white shadow-md rounded-lg py-5">
+                <div className="max-w-2xl w-full mx-auto p-4 bg-white shadow-md rounded-lg py-5">
                     <div className="text-center  mb-5">
                         <h2 className="text-3xl font-bold mb-4 ">
                             <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary relative">
@@ -321,7 +359,6 @@ const GuestLogForm = ({ guests }) => {
                             <Button
                                 size="lg"
                                 color="danger"
-                                variant="flat"
                                 onClick={() => Inertia.visit("/")}
                             >
                                 Cancel
@@ -335,10 +372,17 @@ const GuestLogForm = ({ guests }) => {
                 <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-100 z-50">
                     <div className="bg-white p-6 rounded-lg max-w-md space-y-4">
                         <div className="flex justify-center">
-                            <h1>
-                                Please capture this QR code using your mobile
-                                phone or print it out. This will be used to log
-                                your visit.
+                            <h1 className="hidden md:block">
+                                <span className="text-danger">*</span>
+                                {""} Please capture this QR code using your
+                                mobile phone or print it out. This will be used
+                                for checking out.
+                            </h1>
+                            <h1 className="md:hidden">
+                                <span className="text-danger">*</span>
+                                {""} Please download this QR code or take a
+                                screenshot using your mobile phone. This will be
+                                used for checking out .
                             </h1>
                         </div>
                         <QRCode value={qrCodeUrl} size={400} />
@@ -346,11 +390,12 @@ const GuestLogForm = ({ guests }) => {
                             <Button
                                 color="primary"
                                 variant="shadow"
-                                onClick={() => window.print()}
+                                onClick={printQrCode}
                                 className="hidden sm:block"
                             >
-                                <span className="flex items-center gap-2">
-                                    <FaPrint className="w-4 h-4 text-success" /> Print QR
+                                <span className="flex items-center gap-1">
+                                    <FaPrint className="w-4 h-4 text-success" />
+                                    Print QR
                                 </span>
                             </Button>
                             <Button
@@ -359,7 +404,10 @@ const GuestLogForm = ({ guests }) => {
                                 onClick={() => downloadQrCode(qrCodeUrl)}
                                 className="sm:hidden"
                             >
-                                Download QR
+                                <span className="flex items-center gap-1">
+                                    <MdSimCardDownload className="w-6 h-6 text-success-400" />
+                                    Download QR
+                                </span>
                             </Button>
                             <Button color="danger" onClick={handleClose}>
                                 Close
@@ -373,3 +421,88 @@ const GuestLogForm = ({ guests }) => {
 };
 
 export default GuestLogForm;
+
+export const PrintableGuestPass = ({
+    guestName,
+    meetingWith,
+    purposeOfVisit,
+    checkInTime,
+    qrCodeUrl,
+}) => {
+    return (
+        <div
+            style={{
+                padding: "10px",
+                fontFamily: "Arial, sans-serif",
+                width: "80mm",
+                maxWidth: "80mm",
+                wordWrap: "break-word",
+            }}
+        >
+            <h2 style={{ textAlign: "center", marginRight: "40px" }}>
+                Guest Pass
+            </h2>
+            <p style={{ textAlign: "center", marginRight: "40px" }}>
+                Scan this QR code to check out. Please keep it with you.
+            </p>
+            <hr style={{ marginRight: "40px" }} />
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                }}
+            >
+                <div
+                    style={{
+                        marginBottom: "10px",
+                        textAlign: "left",
+                        width: "100%",
+                    }}
+                >
+                    <p>
+                        <strong>Guest ID:</strong> {guestName}
+                    </p>
+                    <p>
+                        <strong>Meeting With:</strong> {meetingWith}
+                    </p>
+                    <p>
+                        <strong>Purpose of Visit:</strong> {purposeOfVisit}
+                    </p>
+                    <p>
+                        <strong>Check In:</strong>{" "}
+                        {new Date(
+                            new Date(checkInTime).getTime() -
+                                new Date(checkInTime).getTimezoneOffset() *
+                                    60000
+                        ).toLocaleString([], {
+                            year: "numeric",
+                            month: "numeric",
+                            day: "numeric",
+                            hour: "numeric",
+                            minute: "numeric",
+                            hour12: true,
+                        })}
+                    </p>
+                </div>
+                <div style={{ marginTop: "10px", marginRight: "40px" }}>
+                    <img
+                        src={qrCodeUrl}
+                        alt="QR Code"
+                        style={{ width: "250px", height: "250px" }}
+                    />
+                </div>
+            </div>
+            <hr style={{ marginRight: "40px" }} />
+            <div
+                style={{
+                    textAlign: "center",
+                    marginTop: "10px",
+                    marginRight: "40px",
+                }}
+            >
+                <p>Thank you for visit!</p>
+            </div>
+        </div>
+    );
+};

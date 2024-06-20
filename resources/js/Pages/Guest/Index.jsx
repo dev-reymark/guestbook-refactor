@@ -220,7 +220,7 @@ export default function Index({ auth }) {
                                         <TableCell>{guest.company}</TableCell>
                                         <TableCell>{guest.address}</TableCell>
                                         <TableCell>
-                                            <div className="relative flex items-center gap-2 text-lg cursor-pointer active:opacity-50">
+                                            <div className="flex justify-center text-xl cursor-pointer active:opacity-50">
                                                 <Tooltip
                                                     showArrow={true}
                                                     color="primary"
@@ -235,7 +235,7 @@ export default function Index({ auth }) {
                                                         <EyeIcon className="text-primary" />
                                                     </span>
                                                 </Tooltip>
-                                                <Tooltip
+                                                {/* <Tooltip
                                                     showArrow={true}
                                                     color="danger"
                                                     content="Delete"
@@ -250,7 +250,7 @@ export default function Index({ auth }) {
                                                             }
                                                         />
                                                     </span>
-                                                </Tooltip>
+                                                </Tooltip> */}
                                             </div>
                                         </TableCell>
                                     </TableRow>

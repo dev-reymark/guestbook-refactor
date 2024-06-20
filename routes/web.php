@@ -59,4 +59,6 @@ Route::get('/', [UploadController::class, 'index'])->name('media.index');
 Route::get('/upload/all', [UploadController::class, 'show']);
 Route::delete('/uploads/{id}', [UploadController::class, 'destroy']);
 
+Route::get('/scan-qr', [GuestLogController::class, 'scanQrCode'])->name('guestlog.scan');
+
 require __DIR__ . '/auth.php';

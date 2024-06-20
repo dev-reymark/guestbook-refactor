@@ -22,6 +22,7 @@
     "dependencies": {
         "@inertiajs/inertia": "^0.11.1",
         "@nextui-org/react": "^2.3.6",
+        "@yudiel/react-qr-scanner": "^2.0.4",
         "chart.js": "^4.4.2",
         "filepond": "^4.31.1",
         "filepond-plugin-file-validate-type": "^1.2.9",
@@ -31,6 +32,7 @@
         "react-filepond": "^7.1.2",
         "react-icons": "^5.2.0",
         "react-qr-code": "^2.0.14",
+        "react-qr-reader": "^3.0.0-beta-1",
         "sweetalert2": "^11.10.8",
         "swiper": "^11.1.1"
     }

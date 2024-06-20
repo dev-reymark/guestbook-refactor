@@ -205,7 +205,7 @@ export default function Home({ auth, mediaUrls = [] }) {
                                     </div>
                                 </Card>
 
-                                <Card as={Link}>
+                                <Card as={Link} href={route("guestlog.scan")}>
                                     <div className="flex items-start gap-4 p-5 py-14">
                                         <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#FF6B6B]/10 sm:size-16">
                                             <FaSignOutAlt className="h-6 w-6 text-danger" />

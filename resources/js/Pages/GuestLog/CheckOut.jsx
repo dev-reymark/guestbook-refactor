@@ -12,6 +12,7 @@ import {
     Button,
     useDisclosure,
 } from "@nextui-org/react";
+import { TbLogout } from "react-icons/tb";
 
 const CheckOut = () => {
     const { guestLog, guestLogId, checkoutUrl } = usePage().props;
@@ -77,7 +78,7 @@ const CheckOut = () => {
                 placement="center"
                 hideCloseButton
                 isKeyboardDismissDisabled
-                isDismissable
+                isDismissable={false}
             >
                 <ModalContent>
                     {() => (
@@ -86,7 +87,7 @@ const CheckOut = () => {
                                 <div className="text-center mb-5">
                                     <h2 className="text-3xl font-bold mb-4 ">
                                         <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary relative">
-                                            Guest Log Details
+                                            Your Log Details
                                             <span className="absolute  left-1/2 transform -translate-x-1/2 -bottom-2 h-[3px] w-16 bg-[#2aefe6]"></span>
                                         </span>
                                     </h2>
@@ -166,13 +167,17 @@ const CheckOut = () => {
                                         label="Check Out Time"
                                         placeholder="Check Out Time"
                                         readOnly
+                                        color="warning"
                                     />
                                     <div className="flex justify-end">
                                         {!guestLog.check_out_time && (
                                             <Button
+                                                size="lg"
+                                                variant="shadow"
                                                 color="primary"
                                                 onClick={handleCheckOut}
                                                 disabled={isCheckingOut}
+                                                startContent={<TbLogout className="w-7 h-7 text-success" />}
                                             >
                                                 {isCheckingOut
                                                     ? "Checking Out..."

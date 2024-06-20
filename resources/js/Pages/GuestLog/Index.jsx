@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import React from "react";
 import { Head } from "@inertiajs/react";
 import {
@@ -13,6 +13,9 @@ import {
     DateRangePicker,
     Pagination,
     getKeyValue,
+    Chip,
+    Select,
+    SelectItem,
 } from "@nextui-org/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { DeleteIcon, SearchIcon } from "@/Components/Icons";
@@ -83,6 +86,56 @@ export default function Index({ auth, guestLogs }) {
         return filteredGuestLogs.slice(start, end);
     }, [page, rowsPerPage, filteredGuestLogs]);
 
+    const [filterValue, setFilterValue] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(13);
+    const [selectedInterval, setSelectedInterval] = useState("past24Hours");
+    const [filteredLogs, setFilteredLogs] = useState([]);
+
+    useEffect(() => {
+        const filterLogsByInterval = () => {
+            const now = new Date();
+            let filterDate = null;
+
+            switch (selectedInterval) {
+                case "past24Hours":
+                    filterDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+                    break;
+                case "past7Days":
+                    filterDate = new Date(
+                        now.getTime() - 7 * 24 * 60 * 60 * 1000
+                    );
+                    break;
+                case "past30Days":
+                    filterDate = new Date(
+                        now.getTime() - 30 * 24 * 60 * 60 * 1000
+                    );
+                    break;
+                default:
+                    filterDate = null;
+                    break;
+            }
+
+            if (filterDate) {
+                const filteredLogs = guestLogs.filter(
+                    (guestLog) => new Date(guestLog.check_in_time) >= filterDate
+                );
+                setFilteredLogs(filteredLogs);
+            } else {
+                setFilteredLogs(guestLogs);
+            }
+        };
+
+        filterLogsByInterval();
+    }, [selectedInterval, guestLogs]);
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredGuestLogs.slice(
+        indexOfFirstItem,
+        indexOfLastItem
+    );
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -96,7 +149,7 @@ export default function Index({ auth, guestLogs }) {
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="flex flex-col gap-4">
-                        <div className="flex justify-end gap-2 mb-4">
+                        <div className="flex gap-2 justify-end mb-4">
                             <Input
                                 variant="bordered"
                                 placeholder="Search by guest name"
@@ -107,6 +160,32 @@ export default function Index({ auth, guestLogs }) {
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
+
+                            <Select
+                                variant="bordered"
+                                placeholder="Past 24 Hours"
+                                value={selectedInterval}
+                                onChange={(e) =>
+                                    setSelectedInterval(e.target.value)
+                                }
+                            >
+                                <SelectItem value="current" key="current">
+                                    All Time
+                                </SelectItem>
+                                <SelectItem
+                                    value="past24Hours"
+                                    key="past24Hours"
+                                >
+                                    Past 24 Hours
+                                </SelectItem>
+                                <SelectItem value="past7Days" key="past7Days">
+                                    Past 7 Days
+                                </SelectItem>
+                                <SelectItem value="past30Days" key="past30Days">
+                                    Past 30 Days
+                                </SelectItem>
+                            </Select>
+
                             <DateRangePicker
                                 label="Filter by Date"
                                 labelPlacement="top"
@@ -138,13 +217,21 @@ export default function Index({ auth, guestLogs }) {
                             }}
                         >
                             <TableHeader>
-                                <TableColumn className="text-success">#</TableColumn>
+                                <TableColumn className="text-success">
+                                    # ({(page - 1) * rowsPerPage + 1}-
+                                    {Math.min(
+                                        page * rowsPerPage,
+                                        filteredGuestLogs.length
+                                    )}{" "}
+                                    of {filteredGuestLogs.length})
+                                </TableColumn>
                                 <TableColumn>Guest ID</TableColumn>
                                 <TableColumn>Guest Name</TableColumn>
                                 <TableColumn>Purpose of Visit</TableColumn>
                                 <TableColumn>Check In</TableColumn>
                                 <TableColumn>Check Out</TableColumn>
-                                <TableColumn>Actions</TableColumn>
+                                {/* <TableColumn>Actions</TableColumn> */}
+                                <TableColumn>Status</TableColumn>
                             </TableHeader>
                             <TableBody
                                 emptyContent={"No guests found."}
@@ -152,7 +239,11 @@ export default function Index({ auth, guestLogs }) {
                             >
                                 {items.map((guestLog, index) => (
                                     <TableRow key={guestLog.id}>
-                                        <TableCell className="text-success">{(page - 1) * rowsPerPage + index + 1}</TableCell>
+                                        <TableCell className="text-success">
+                                            {(page - 1) * rowsPerPage +
+                                                index +
+                                                1}
+                                        </TableCell>
                                         <TableCell>
                                             {guestLog.guest_id}
                                         </TableCell>
@@ -169,6 +260,19 @@ export default function Index({ auth, guestLogs }) {
                                             {guestLog.check_out_time}
                                         </TableCell>
                                         <TableCell>
+                                            <Chip
+                                                color={
+                                                    guestLog.check_out_time
+                                                        ? "success"
+                                                        : "warning"
+                                                }
+                                            >
+                                                {guestLog.check_out_time
+                                                    ? "Checked Out"
+                                                    : "Not Checked Out yet"}
+                                            </Chip>
+                                        </TableCell>
+                                        {/* <TableCell>
                                             <div className="relative flex items-center justify-center gap-2 text-lg cursor-pointer active:opacity-50">
                                                 <Tooltip
                                                     showArrow={true}
@@ -187,7 +291,7 @@ export default function Index({ auth, guestLogs }) {
                                                     </span>
                                                 </Tooltip>
                                             </div>
-                                        </TableCell>
+                                        </TableCell> */}
                                     </TableRow>
                                 ))}
                             </TableBody>

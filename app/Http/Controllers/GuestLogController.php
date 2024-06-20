@@ -29,8 +29,7 @@ class GuestLogController extends Controller
         $guestLogData = $request->only(['meeting_with', 'purpose_of_visit', 'check_in_time', 'check_out_time']);
         $guestLogData['guest_id'] = $guestId;
         $guestLog = GuestLog::create($guestLogData);
-
-        // Assuming the route name for the checkout page is 'guest.checkout'
+        
         $qrCodeUrl = route('guest.log.show', ['guestLogId' => $guestLog->id]);
 
         return response()->json(['guestLogId' => $guestLog->id, 'qrCodeUrl' => $qrCodeUrl]);
@@ -127,5 +126,10 @@ class GuestLogController extends Controller
         }
 
         return response()->json($data);
+    }
+
+    public function scanQRCode()
+    {
+        return inertia('GuestLog/ScanQr');
     }
 }
