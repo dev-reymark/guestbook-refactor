@@ -17,27 +17,7 @@ import { Inertia } from "@inertiajs/inertia";
 import { FaPrint } from "react-icons/fa";
 import ReactDOMServer from "react-dom/server";
 import { MdSimCardDownload } from "react-icons/md";
-
-const meetingWithOptions = [
-    {
-        value: "Ricardo Yap",
-        label: "Ricardo Yap",
-        position: "President/CEO",
-        avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/male/1.png",
-    },
-    {
-        value: "Edwin Yap",
-        label: "Edwin Yap",
-        position: "General Manager",
-        avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/male/1.png",
-    },
-];
-
-const purposeOfVisitOptions = [
-    { value: "Business Meeting", label: "Business Meeting" },
-    { value: "Job Interview", label: "Job Interview" },
-    { value: "Other", label: "Other" }, // Added "Other" option
-];
+import { meetingWithOptions, purposeOfVisitOptions } from "@/Components/Data";
 
 const GuestLogForm = ({ guests }) => {
     const [selectedGuestId, setSelectedGuestId] = useState("");
@@ -182,7 +162,7 @@ const GuestLogForm = ({ guests }) => {
             <PrintableGuestPass
                 guestName={selectedGuestId}
                 meetingWith={values.meeting_with}
-                purposeOfVisit={values.purpose_of_visit}
+                purposeOfVisit={values.purpose_of_visit === "Other" ? otherPurpose : values.purpose_of_visit}
                 checkInTime={values.check_in_time}
                 checkOutTime={values.check_out_time}
                 qrCodeUrl={qrCodeDataUrl}
@@ -242,15 +222,17 @@ const GuestLogForm = ({ guests }) => {
                                 selectedKey={selectedGuestId}
                                 onSelectionChange={setSelectedGuestId}
                                 isRequired
+                                onInput={handleSearchChange}
                             >
-                                {filteredGuests.map((guest) => (
-                                    <AutocompleteItem
-                                        key={guest.id}
-                                        value={guest.id}
-                                    >
-                                        {guest.name}
-                                    </AutocompleteItem>
-                                ))}
+                                {searchValue &&
+                                    filteredGuests.map((guest) => (
+                                        <AutocompleteItem
+                                            key={guest.id}
+                                            value={guest.id}
+                                        >
+                                            {guest.name}
+                                        </AutocompleteItem>
+                                    ))}
                             </Autocomplete>
 
                             <GuestRegisterForm />
@@ -471,11 +453,7 @@ export const PrintableGuestPass = ({
                     </p>
                     <p>
                         <strong>Check In:</strong>{" "}
-                        {new Date(
-                            new Date(checkInTime).getTime() -
-                                new Date(checkInTime).getTimezoneOffset() *
-                                    60000
-                        ).toLocaleString([], {
+                        {new Date(checkInTime).toLocaleString([], {
                             year: "numeric",
                             month: "numeric",
                             day: "numeric",

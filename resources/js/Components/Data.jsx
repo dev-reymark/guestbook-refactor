@@ -87,7 +87,6 @@ export const meetingWithOptions = [
     },
 ];
 
-
 export const purposeOfVisitOptions = [
     { value: "Business Meeting", label: "Business Meeting" },
     { value: "Job Interview", label: "Job Interview" },
@@ -98,4 +97,5 @@ export const purposeOfVisitOptions = [
     { value: "Seminar", label: "Seminar" },
     { value: "Meeting", label: "Meeting" },
     { value: "Company Event", label: "Company Event" },
+    { value: "Other", label: "Other" },
 ];
