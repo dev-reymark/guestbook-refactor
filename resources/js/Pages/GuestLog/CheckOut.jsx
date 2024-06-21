@@ -13,6 +13,7 @@ import {
     useDisclosure,
 } from "@nextui-org/react";
 import { TbLogout } from "react-icons/tb";
+import { Inertia } from "@inertiajs/inertia";
 
 const CheckOut = () => {
     const { guestLog, guestLogId, checkoutUrl } = usePage().props;
@@ -47,7 +48,9 @@ const CheckOut = () => {
             .post(checkoutUrl)
             .then((response) => {
                 // Play the success sound
-                const successAudio = new Audio("/assets/audio/checkout-success.mp3");
+                const successAudio = new Audio(
+                    "/assets/audio/checkout-success.mp3"
+                );
                 successAudio.play();
 
                 Swal.fire({
@@ -179,7 +182,7 @@ const CheckOut = () => {
                                         readOnly
                                         color="warning"
                                     />
-                                    <div className="flex justify-end">
+                                    <div className="flex justify-end gap-2">
                                         {!guestLog.check_out_time && (
                                             <Button
                                                 size="lg"
@@ -196,6 +199,14 @@ const CheckOut = () => {
                                                     : "Check Out"}
                                             </Button>
                                         )}
+
+                                        <Button
+                                            size="lg"
+                                            onPress={() => Inertia.visit("/")}
+                                            color="danger"
+                                        >
+                                            Later
+                                        </Button>
                                     </div>
                                 </div>
                             </ModalBody>

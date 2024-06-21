@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { QrReader } from "react-qr-reader";
 import { Inertia } from "@inertiajs/inertia";
 import { Button } from "@nextui-org/react";
@@ -7,6 +7,14 @@ import { Head } from "@inertiajs/react";
 
 const ScanQr = () => {
     const [scanResult, setScanResult] = useState(null);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            Inertia.visit("/");
+        }, 30000); // 30 seconds
+
+        return () => clearTimeout(timer); // Cleanup timer on component unmount
+    }, []);
 
     const handleError = (err) => {
         console.error(err);

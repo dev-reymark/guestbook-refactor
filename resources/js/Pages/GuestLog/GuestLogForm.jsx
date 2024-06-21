@@ -398,23 +398,26 @@ const GuestLogForm = ({ guests }) => {
 
             {showQrCode && (
                 <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-100 z-50">
-                    <div className="bg-white p-6 rounded-lg max-w-md space-y-4">
+                    <div className="bg-white p-6 rounded-lg max-w-md space-y-4 w-full mx-4">
                         <div className="flex justify-center">
-                            <h1 className="hidden md:block">
-                                <span className="text-danger">*</span>
-                                {""} Please capture this QR code using your
-                                mobile phone or print it out. This will be used
-                                for checking out.
+                            <h1 className="hidden md:block text-center">
+                                <span className="text-danger">*</span> Please
+                                capture this QR code using your mobile phone or
+                                print it out. This will be used for checking
+                                out.
                             </h1>
-                            <h1 className="md:hidden">
-                                <span className="text-danger">*</span>
-                                {""} Please download this QR code or take a
-                                screenshot using your mobile phone. This will be
-                                used for checking out .
+                            <h1 className="md:hidden text-center">
+                                <span className="text-danger">*</span> Please
+                                download this QR code or take a screenshot using
+                                your mobile phone. This will be used for
+                                checking out.
                             </h1>
                         </div>
-                        <QRCode value={qrCodeUrl} size={400} />
-                        <div className="flex justify-end gap-1">
+                        <div className="flex justify-center">
+                            <QRCode value={qrCodeUrl} size={350} />{" "}
+                            {/* Adjust size if needed */}
+                        </div>
+                        <div className="flex justify-end gap-2">
                             <Button
                                 color="primary"
                                 variant="shadow"
