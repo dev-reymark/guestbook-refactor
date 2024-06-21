@@ -100,12 +100,12 @@ export default function Home({ auth, mediaUrls = [] }) {
     return (
         <>
             <Head title="Home" />
-            <audio
+            {/* <audio
                 ref={audioRef}
                 src="/assets/audio/datalogic.mp3"
                 autoPlay
                 loop
-            ></audio>
+            ></audio> */}
             <div className="relative min-h-screen p-5">
                 <img
                     className="absolute inset-0 w-full h-full object-cover pointer-events-none"
@@ -218,145 +218,6 @@ export default function Home({ auth, mediaUrls = [] }) {
                                     </div>
                                 </Card>
                             </div>
-
-                            {/* <Card className="w-full mx-auto p-2 bg-slate-200">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <Card className="flex flex-col">
-                                        <div className="p-4 md:p-5 flex gap-x-4">
-                                            <div className="flex-shrink-0 flex justify-center items-center size-[46px] bg-gray-100 rounded-lg dark:bg-neutral-800">
-                                                <FaRegUser />
-                                            </div>
-                                            <div className="grow">
-                                                <div className="flex items-center gap-x-2">
-                                                    <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-neutral-500">
-                                                        Total Guest Registered
-                                                    </p>
-                                                </div>
-                                                <div className="mt-1 flex items-center gap-x-2">
-                                                    <h3 className="text-xl sm:text-2xl font-medium text-gray-800 dark:text-neutral-200">
-                                                        {totalRegisteredGuest ??
-                                                            "-"}
-                                                    </h3>
-                                                    {totalRegisteredGuest !==
-                                                        null &&
-                                                        avgLogsInPast7Days !==
-                                                            null && (
-                                                            <span
-                                                                className={`inline-flex items-center gap-x-1 py-0.5 px-2 rounded-full ${
-                                                                    calculatePercentageChange(
-                                                                        totalRegisteredGuest,
-                                                                        avgLogsInPast7Days
-                                                                    ) ?? 0 > 0
-                                                                        ? "bg-green-100 text-green-900 dark:bg-green-800 dark:text-green-100"
-                                                                        : "bg-red-100 text-red-900 dark:bg-red-800 dark:text-red-100"
-                                                                }`}
-                                                            >
-                                                                {calculatePercentageChange(
-                                                                    totalRegisteredGuest,
-                                                                    avgLogsInPast7Days
-                                                                ) ?? 0 > 0 ? (
-                                                                    <HiArrowTrendingUp />
-                                                                ) : (
-                                                                    <HiArrowTrendingDown />
-                                                                )}
-                                                                <span className="inline-block text-xs font-medium">
-                                                                    {calculatePercentageChange(
-                                                                        totalRegisteredGuest,
-                                                                        avgLogsInPast7Days
-                                                                    ) !== null
-                                                                        ? `${Math.abs(
-                                                                              calculatePercentageChange(
-                                                                                  totalRegisteredGuest,
-                                                                                  avgLogsInPast7Days
-                                                                              )
-                                                                          ).toFixed(
-                                                                              1
-                                                                          )}%`
-                                                                        : "-"}
-                                                                </span>
-                                                            </span>
-                                                        )}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </Card>
-
-                                    <Card className="flex flex-col">
-                                        <div className="p-4 md:p-5 flex gap-x-4">
-                                            <div className="flex-shrink-0 flex justify-center items-center size-[46px] bg-gray-100 rounded-lg dark:bg-neutral-800">
-                                                <svg
-                                                    className="flex-shrink-0 size-5 text-gray-600 dark:text-neutral-400"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    width="24"
-                                                    height="24"
-                                                    viewBox="0 0 24 24"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    strokeWidth="2"
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                >
-                                                    <path d="M21 11V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h6" />
-                                                    <path d="m12 12 4 10 1.7-4.3L22 16Z" />
-                                                </svg>
-                                            </div>
-
-                                            <div className="grow">
-                                                <div className="flex items-center gap-x-2">
-                                                    <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-neutral-500">
-                                                        Avg Logs in Past 7 days
-                                                    </p>
-                                                </div>
-                                                <div className="mt-1 flex items-center gap-x-2">
-                                                    <h3 className="text-xl sm:text-2xl font-medium text-gray-800 dark:text-neutral-200">
-                                                        {avgLogsInPast7Days ??
-                                                            "-"}
-                                                    </h3>
-                                                    {totalRegisteredGuest !==
-                                                        null &&
-                                                        avgLogsInPast7Days !==
-                                                            null && (
-                                                            <span
-                                                                className={`inline-flex items-center gap-x-1 py-0.5 px-2 rounded-full ${
-                                                                    calculatePercentageChange(
-                                                                        avgLogsInPast7Days,
-                                                                        totalRegisteredGuest
-                                                                    ) ?? 0 > 0
-                                                                        ? "bg-green-100 text-green-900 dark:bg-green-800 dark:text-green-100"
-                                                                        : "bg-red-100 text-red-900 dark:bg-red-800 dark:text-red-100"
-                                                                }`}
-                                                            >
-                                                                {calculatePercentageChange(
-                                                                    avgLogsInPast7Days,
-                                                                    totalRegisteredGuest
-                                                                ) ?? 0 > 0 ? (
-                                                                    <HiArrowTrendingUp />
-                                                                ) : (
-                                                                    <HiArrowTrendingDown />
-                                                                )}
-                                                                <span className="inline-block text-xs font-medium">
-                                                                    {calculatePercentageChange(
-                                                                        avgLogsInPast7Days,
-                                                                        totalRegisteredGuest
-                                                                    ) !== null
-                                                                        ? `${Math.abs(
-                                                                              calculatePercentageChange(
-                                                                                  avgLogsInPast7Days,
-                                                                                  totalRegisteredGuest
-                                                                              )
-                                                                          ).toFixed(
-                                                                              1
-                                                                          )}%`
-                                                                        : "-"}
-                                                                </span>
-                                                            </span>
-                                                        )}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </Card>
-                                </div>
-                            </Card> */}
 
                             <Card className="p-2" style={{ height: "290px" }}>
                                 <CardHeader className="text-center p-0 mb-3">

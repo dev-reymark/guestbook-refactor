@@ -22,13 +22,18 @@ const CheckOut = () => {
     useEffect(() => {
         // Show SweetAlert if guest has already checked out
         if (guestLog.check_out_time) {
+            // Play the error sound
+            const audio = new Audio("/assets/audio/checkout-warning.mp3");
+            audio.play();
+
             Swal.fire({
                 title: "Already Checked Out",
                 text: "This guest has already been checked out.",
                 icon: "warning",
-                confirmButtonText: "OK",
+                timer: 5000, // Alert will close automatically after 3 seconds
+                showConfirmButton: false, // Hide the confirm button
             }).then(() => {
-                // Redirect to homepage after user clicks OK
+                // Redirect to homepage after alert closes
                 window.location.href = "/";
             });
         } else {
@@ -41,11 +46,16 @@ const CheckOut = () => {
         axios
             .post(checkoutUrl)
             .then((response) => {
+                // Play the success sound
+                const successAudio = new Audio("/assets/audio/checkout-success.mp3");
+                successAudio.play();
+
                 Swal.fire({
                     title: "Success!",
                     text: "You have successfully checked out.",
                     icon: "success",
-                    confirmButtonText: "OK",
+                    timer: 5000, // Alert will close automatically after 3 seconds
+                    showConfirmButton: false, // Hide the confirm button
                 }).then(() => {
                     window.location.href = "/"; // Redirect to homepage
                 });
@@ -177,7 +187,9 @@ const CheckOut = () => {
                                                 color="primary"
                                                 onClick={handleCheckOut}
                                                 disabled={isCheckingOut}
-                                                startContent={<TbLogout className="w-7 h-7 text-success" />}
+                                                startContent={
+                                                    <TbLogout className="w-7 h-7 text-success" />
+                                                }
                                             >
                                                 {isCheckingOut
                                                     ? "Checking Out..."

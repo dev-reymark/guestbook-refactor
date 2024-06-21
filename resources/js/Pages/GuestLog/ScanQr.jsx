@@ -21,6 +21,11 @@ const ScanQr = () => {
     const handleScan = (result) => {
         if (result) {
             setScanResult(result);
+
+            // Play the beep sound
+            const audio = new Audio("/assets/audio/beep.mp3");
+            audio.play();
+
             Swal.fire({
                 title: "QR Code Scanned",
                 text: "Redirecting to checkout page...",
@@ -37,7 +42,7 @@ const ScanQr = () => {
         <div className="min-h-screen bg-[url(/assets/images/bg.png)] bg-cover flex items-center justify-center">
             <Head title="Scan QR Code" />
 
-            <div className="max-w-2xl w-full bg-gray-50 p-6 rounded-lg shadow-lg">
+            <div className="max-w-5xl mx-auto bg-gray-50 p-6 rounded-lg shadow-lg">
                 <div className="text-center">
                     <h2 className="text-4xl font-bold">
                         <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary relative">
