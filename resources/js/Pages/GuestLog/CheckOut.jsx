@@ -100,7 +100,7 @@ const CheckOut = () => {
                                 <div className="text-center mb-5">
                                     <h2 className="text-3xl font-bold mb-4 ">
                                         <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary relative">
-                                            Your Log Details
+                                            Visit Details
                                             <span className="absolute  left-1/2 transform -translate-x-1/2 -bottom-2 h-[3px] w-16 bg-[#2aefe6]"></span>
                                         </span>
                                     </h2>

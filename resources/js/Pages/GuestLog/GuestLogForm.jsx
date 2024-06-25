@@ -14,12 +14,12 @@ import Swal from "sweetalert2";
 import GuestRegisterForm from "../Guest/GuestRegisterForm";
 import QRCode from "qrcode.react";
 import { Inertia } from "@inertiajs/inertia";
-import { FaPrint, FaSave } from "react-icons/fa";
+import { FaPrint } from "react-icons/fa";
 import ReactDOMServer from "react-dom/server";
 import { MdSimCardDownload } from "react-icons/md";
 import { meetingWithOptions, purposeOfVisitOptions } from "@/Components/Data";
 import { HiOutlineSave } from "react-icons/hi";
-import { FcCancel } from "react-icons/fc";
+
 const GuestLogForm = ({ guests }) => {
     const [selectedGuestId, setSelectedGuestId] = useState("");
     const [searchValue, setSearchValue] = useState("");
@@ -175,7 +175,6 @@ const GuestLogForm = ({ guests }) => {
         );
 
         const printWindow = window.open("", "_blank", "hidden=yes");
-
         printWindow.document.open();
         printWindow.document.write("<html><head><title>Print</title>");
         printWindow.document.write("</head><body>");
@@ -189,44 +188,6 @@ const GuestLogForm = ({ guests }) => {
             printWindow.close();
         };
     };
-
-    // const printQrCode = () => {
-    //     const canvas = document.querySelector("canvas");
-    //     const qrCodeDataUrl = canvas.toDataURL("image/png");
-
-    //     const printableContent = ReactDOMServer.renderToString(
-    //         <PrintableGuestPass
-    //             guestName={selectedGuestId}
-    //             meetingWith={values.meeting_with}
-    //             purposeOfVisit={
-    //                 values.purpose_of_visit === "Other"
-    //                     ? otherPurpose
-    //                     : values.purpose_of_visit
-    //             }
-    //             checkInTime={values.check_in_time}
-    //             checkOutTime={values.check_out_time}
-    //             qrCodeUrl={qrCodeDataUrl}
-    //         />
-    //     );
-
-    //     const printContentAsElement = () => {
-    //         const printWindow = window.open("", "Print Window");
-    //         printWindow.document.open();
-    //         printWindow.document.write(
-    //             "<html><head><title>Print</title></head><body>"
-    //         );
-    //         printWindow.document.write(printableContent);
-    //         printWindow.document.write("</body></html>");
-    //         printWindow.document.close();
-
-    //         printWindow.onload = function () {
-    //             printWindow.focus();
-    //             printWindow.print();
-    //             printWindow.close();
-    //         };
-    //     };
-    //     printContentAsElement();
-    // };
 
     return (
         <div className="min-h-screen bg-[url(/assets/images/bg.png)] bg-cover">
@@ -397,7 +358,7 @@ const GuestLogForm = ({ guests }) => {
             </div>
 
             {showQrCode && (
-                <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-100 z-50">
+                <div className="fixed inset-0 flex items-center justify-center bg-[url(/assets/images/bg.png)] bg-cover bg-opacity-100 z-50 p-1">
                     <div className="bg-white p-6 rounded-lg max-w-md space-y-4 w-full mx-4">
                         <div className="flex justify-center">
                             <h1 className="hidden md:block text-center">
