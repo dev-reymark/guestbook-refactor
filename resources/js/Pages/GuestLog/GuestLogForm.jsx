@@ -256,7 +256,7 @@ const GuestLogForm = ({ guests }) => {
                                 }
                                 labelPlacement="outside"
                                 placeholder="Search your name here"
-                                description="If you don't see your name here, please register first."
+                                description="If you don't see your name here, please click New Guest Button to register."
                                 selectedKey={selectedGuestId}
                                 onSelectionChange={setSelectedGuestId}
                                 isRequired

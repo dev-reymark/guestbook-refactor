@@ -205,7 +205,7 @@ const CheckOut = () => {
                                             onPress={() => Inertia.visit("/")}
                                             color="danger"
                                         >
-                                            Later
+                                            Cancel
                                         </Button>
                                     </div>
                                 </div>

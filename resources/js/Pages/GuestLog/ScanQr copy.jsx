@@ -131,11 +131,6 @@ const ScanQr = () => {
                     onResult={handleScan}
                     style={{ width: "100%" }}
                 />
-                <div className="flex justify-end gap-2">
-                    <Button onPress={() => Inertia.visit("/")} color="danger">
-                        Cancel
-                    </Button>
-                </div>
             </div>
 
             {/* For Mobile devices */}

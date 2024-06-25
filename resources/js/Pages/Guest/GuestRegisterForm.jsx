@@ -42,29 +42,47 @@ export default function GuestRegisterForm() {
     const [isOpen, setIsOpen] = useState(false);
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
     const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
+    const [isNameValid, setIsNameValid] = useState(true); // Initially assume name is valid
 
-    const handleChange = (e) => {
+    const handleChange = async (e) => {
         const { name, value } = e.target;
         let capitalizedValue = value;
         if (name === "name" || name === "company") {
             capitalizedValue = value
-                .split(" ") // Split the value into an array of words
+                .split(" ")
                 .map(
                     (word) =>
                         word.charAt(0).toUpperCase() +
                         word.slice(1).toLowerCase()
-                ) // Capitalize the first letter of each word
-                .join(" "); // Join the words back into a string
+                )
+                .join(" ");
         }
         setValues((prevValues) => ({
             ...prevValues,
             [name]: capitalizedValue,
         }));
+
+        // Check if the name is available
+        const isAvailable = await checkNameAvailability(capitalizedValue);
+        setIsNameValid(isAvailable);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Check if the name is available
+        const isAvailable = await checkNameAvailability(values.name);
+
+        if (!isAvailable) {
+            // If name is not available, set isNameValid to false to show error message
+            setIsNameValid(false);
+            return; // Exit function early
+        }
+
+        // If name is available, proceed with form submission
         await Inertia.post("/guest/register", values);
+
+        // Show success message
         Swal.fire({
             title: "Success!",
             text: "You are registered successfully!",
@@ -72,6 +90,7 @@ export default function GuestRegisterForm() {
             confirmButtonText: "OK",
         });
 
+        // Navigate to another page or perform any other necessary action
         Inertia.visit(route("guestlog.create"));
     };
 
@@ -91,6 +110,19 @@ export default function GuestRegisterForm() {
     const iconClasses =
         "text-xl text-default-500 pointer-events-none flex-shrink-0";
 
+    const checkNameAvailability = async (name) => {
+        try {
+            const response = await fetch(
+                `/check-name/${encodeURIComponent(name)}`
+            );
+            const data = await response.json();
+            return data.available; // Assume the backend returns { available: true/false }
+        } catch (error) {
+            console.error("Error checking name availability:", error);
+            return false; // Handle error case
+        }
+    };
+
     return (
         <div>
             <Button
@@ -99,7 +131,7 @@ export default function GuestRegisterForm() {
                 className="mt-6"
                 onPress={handleRegisterClick}
             >
-                Register
+                New Guest
             </Button>
 
             {/* Privacy Modal */}
@@ -337,6 +369,8 @@ export default function GuestRegisterForm() {
                                     onClear={() =>
                                         setValues({ ...values, name: "" })
                                     }
+                                    isInvalid={!isNameValid}
+                                    errorMessage="The name you entered is already registered."
                                 />
                             </div>
                             <div className="mb-4">

@@ -15,7 +15,7 @@ class GuestController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:guests',
             'id_type' => 'nullable|string|max:255',
             'id_number' => 'nullable|string|max:255',
             'email' => 'nullable|email',
@@ -25,13 +25,13 @@ class GuestController extends Controller
             'is_agreed' => 'required|boolean',
         ]);
 
-        $data = $request->only(['name', 'id_type', 'id_number', 'email', 'phone', 'company', 'address', 'is_agreed']);
+        $guest = Guest::create($request->all());
 
-        Guest::create($data);
-
-        return redirect()->route('guest.register')->with('success', 'Guest registered successfully!');
+        return response()->json([
+            'guestId' => $guest->id,
+            'guestName' => $guest->name,
+        ]);
     }
-
 
     public function index()
     {
@@ -68,4 +68,10 @@ class GuestController extends Controller
 
     //     return $pdf->download('guests_report.pdf');
     // }
+
+    public function checkNameAvailability($name)
+    {
+        $exists = Guest::where('name', $name)->exists();
+        return response()->json(['available' => !$exists]);
+    }
 }
