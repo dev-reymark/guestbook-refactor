@@ -134,7 +134,7 @@ export default function Index({ auth, guestLogs }) {
             <div className="py-12 p-2">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="flex flex-col gap-4">
-                        <div className="flex gap-2 justify-end mb-4">
+                        <div className="flex gap-2 justify-between mb-4">
                             <Input
                                 variant="bordered"
                                 placeholder="Search by guest name"
@@ -174,7 +174,7 @@ export default function Index({ auth, guestLogs }) {
                             <DateRangePicker
                                 label="Filter by Date"
                                 labelPlacement="top"
-                                className="max-w-xs"
+                                className="max-w-xs hidden sm:flex"
                                 variant="bordered"
                                 visibleMonths={2}
                                 onChange={(range) => setDateRange(range)}

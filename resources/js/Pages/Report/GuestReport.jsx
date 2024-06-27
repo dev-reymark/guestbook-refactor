@@ -202,10 +202,7 @@ const GuestReport = ({ auth }) => {
         return labels;
     };
 
-    const fillMissingData = (
-        existingLabels,
-        existingData
-    ) => {
+    const fillMissingData = (existingLabels, existingData) => {
         const allMonthsLabels = generateAllMonthsLabels();
         const filledData = [];
         allMonthsLabels.forEach((month, index) => {
@@ -276,7 +273,7 @@ const GuestReport = ({ auth }) => {
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <Card className="w-full">
                         <CardHeader className="flex gap-3">
-                            <div className="flex justify-between gap-3">
+                            <div className="flex gap-2 justify-between">
                                 <Button
                                     color="primary"
                                     variant="shadow"
@@ -284,24 +281,23 @@ const GuestReport = ({ auth }) => {
                                 >
                                     Export All
                                 </Button>
-                                <div className="flex justify-end gap-2">
-                                    <Button
-                                        color="secondary"
-                                        onClick={generatePDFReportCustomRange}
-                                    >
-                                        Export Custom Date
-                                    </Button>
+                                <Button
+                                    className="hidden sm:block"
+                                    color="secondary"
+                                    onClick={generatePDFReportCustomRange}
+                                >
+                                    Export Custom Date
+                                </Button>
 
-                                    <DateRangePicker
-                                        label="Select Date Range"
-                                        size="sm"
-                                        value={dateRange}
-                                        onChange={setDateRange}
-                                        className="w-50"
-                                        visibleMonths={2}
-                                        pageBehavior="single"
-                                    />
-                                </div>
+                                <DateRangePicker
+                                    label="Select Date Range"
+                                    size="sm"
+                                    value={dateRange}
+                                    onChange={setDateRange}
+                                    className="w-50 hidden sm:block"
+                                    visibleMonths={2}
+                                    pageBehavior="single"
+                                />
                             </div>
                         </CardHeader>
                         <Divider />
