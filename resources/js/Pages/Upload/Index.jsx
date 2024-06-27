@@ -100,7 +100,7 @@ export default function Index({ auth }) {
         >
             <Head title="Guests" />
 
-            <div className="py-8">
+            <div className="py-8 p-2">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <Button
                         as={Link}

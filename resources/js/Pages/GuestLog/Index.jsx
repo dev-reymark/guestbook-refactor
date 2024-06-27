@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import React from "react";
 import { Head } from "@inertiajs/react";
 import {
@@ -12,19 +12,23 @@ import {
     Tooltip,
     DateRangePicker,
     Pagination,
-    getKeyValue,
     Chip,
     Select,
     SelectItem,
 } from "@nextui-org/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { DeleteIcon, SearchIcon } from "@/Components/Icons";
+import { CheckIcon, DeleteIcon, SearchIcon } from "@/Components/Icons";
 import Swal from "sweetalert2";
 import { Inertia } from "@inertiajs/inertia";
+import { FaCheck, FaTimes, FaTimesCircle } from "react-icons/fa";
 
 export default function Index({ auth, guestLogs }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [dateRange, setDateRange] = useState({ start: null, end: null });
+    const [filteredGuestLogs, setFilteredGuestLogs] = useState(guestLogs);
+    const [page, setPage] = useState(1);
+    const rowsPerPage = 8;
+    const [selectedInterval, setSelectedInterval] = useState("");
 
     const handleDelete = (guestId) => {
         Swal.fire({
@@ -59,39 +63,6 @@ export default function Index({ auth, guestLogs }) {
         });
     };
 
-    const filterLogs = (guestLog) => {
-        const matchesSearchTerm = guestLog.guest.name
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase());
-        const matchesDateRange =
-            (!dateRange.start ||
-                new Date(guestLog.created_at) >= new Date(dateRange.start)) &&
-            (!dateRange.end ||
-                new Date(guestLog.created_at) <= new Date(dateRange.end));
-
-        return matchesSearchTerm && matchesDateRange;
-    };
-
-    const filteredGuestLogs = guestLogs.filter(filterLogs);
-
-    const [page, setPage] = React.useState(1);
-    const rowsPerPage = 15;
-
-    const pages = Math.ceil(filteredGuestLogs.length / rowsPerPage);
-
-    const items = React.useMemo(() => {
-        const start = (page - 1) * rowsPerPage;
-        const end = start + rowsPerPage;
-
-        return filteredGuestLogs.slice(start, end);
-    }, [page, rowsPerPage, filteredGuestLogs]);
-
-    const [filterValue, setFilterValue] = useState("");
-    const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(13);
-    const [selectedInterval, setSelectedInterval] = useState("past24Hours");
-    const [filteredLogs, setFilteredLogs] = useState([]);
-
     useEffect(() => {
         const filterLogsByInterval = () => {
             const now = new Date();
@@ -116,25 +87,39 @@ export default function Index({ auth, guestLogs }) {
                     break;
             }
 
-            if (filterDate) {
-                const filteredLogs = guestLogs.filter(
-                    (guestLog) => new Date(guestLog.check_in_time) >= filterDate
-                );
-                setFilteredLogs(filteredLogs);
-            } else {
-                setFilteredLogs(guestLogs);
-            }
+            const filteredLogs = guestLogs.filter((guestLog) => {
+                const logDate = new Date(guestLog.check_in_time);
+                return filterDate ? logDate >= filterDate : true;
+            });
+
+            setFilteredGuestLogs(filteredLogs);
         };
 
         filterLogsByInterval();
     }, [selectedInterval, guestLogs]);
 
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = filteredGuestLogs.slice(
-        indexOfFirstItem,
-        indexOfLastItem
-    );
+    const filterLogs = (guestLog) => {
+        const matchesSearchTerm = guestLog.guest.name
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
+        const matchesDateRange =
+            (!dateRange.start ||
+                new Date(guestLog.created_at) >= new Date(dateRange.start)) &&
+            (!dateRange.end ||
+                new Date(guestLog.created_at) <= new Date(dateRange.end));
+
+        return matchesSearchTerm && matchesDateRange;
+    };
+
+    const displayedGuestLogs = filteredGuestLogs.filter(filterLogs);
+
+    const pages = Math.ceil(displayedGuestLogs.length / rowsPerPage);
+
+    const items = useMemo(() => {
+        const start = (page - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        return displayedGuestLogs.slice(start, end);
+    }, [page, rowsPerPage, displayedGuestLogs]);
 
     return (
         <AuthenticatedLayout
@@ -146,7 +131,7 @@ export default function Index({ auth, guestLogs }) {
             }
         >
             <Head title="Guests Logs" />
-            <div className="py-12">
+            <div className="py-12 p-2">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="flex flex-col gap-4">
                         <div className="flex gap-2 justify-end mb-4">
@@ -163,7 +148,7 @@ export default function Index({ auth, guestLogs }) {
 
                             <Select
                                 variant="bordered"
-                                placeholder="Past 24 Hours"
+                                placeholder="Filter by Interval"
                                 value={selectedInterval}
                                 onChange={(e) =>
                                     setSelectedInterval(e.target.value)
@@ -221,16 +206,16 @@ export default function Index({ auth, guestLogs }) {
                                     # ({(page - 1) * rowsPerPage + 1}-
                                     {Math.min(
                                         page * rowsPerPage,
-                                        filteredGuestLogs.length
+                                        displayedGuestLogs.length
                                     )}{" "}
-                                    of {filteredGuestLogs.length})
+                                    of {displayedGuestLogs.length})
                                 </TableColumn>
                                 <TableColumn>Guest ID</TableColumn>
                                 <TableColumn>Guest Name</TableColumn>
+                                <TableColumn>Meeting With</TableColumn>
                                 <TableColumn>Purpose of Visit</TableColumn>
                                 <TableColumn>Check In</TableColumn>
                                 <TableColumn>Check Out</TableColumn>
-                                {/* <TableColumn>Actions</TableColumn> */}
                                 <TableColumn>Status</TableColumn>
                             </TableHeader>
                             <TableBody
@@ -251,47 +236,70 @@ export default function Index({ auth, guestLogs }) {
                                             {guestLog.guest.name}
                                         </TableCell>
                                         <TableCell>
+                                            {guestLog.meeting_with}
+                                        </TableCell>
+                                        <TableCell>
                                             {guestLog.purpose_of_visit}
                                         </TableCell>
                                         <TableCell>
-                                            {guestLog.check_in_time}
+                                            {new Date(
+                                                new Date(
+                                                    guestLog.check_in_time
+                                                ).getTime() -
+                                                    new Date(
+                                                        guestLog.check_in_time
+                                                    ).getTimezoneOffset() *
+                                                        60000
+                                            ).toLocaleString([], {
+                                                year: "numeric",
+                                                month: "numeric",
+                                                day: "numeric",
+                                                hour: "numeric",
+                                                minute: "numeric",
+                                                hour12: true,
+                                            })}
                                         </TableCell>
                                         <TableCell>
-                                            {guestLog.check_out_time}
+                                            {guestLog.check_out_time
+                                                ? new Date(
+                                                      new Date(
+                                                          guestLog.check_out_time
+                                                      ).getTime() -
+                                                          new Date(
+                                                              guestLog.check_out_time
+                                                          ).getTimezoneOffset() *
+                                                              60000
+                                                  ).toLocaleString([], {
+                                                      year: "numeric",
+                                                      month: "numeric",
+                                                      day: "numeric",
+                                                      hour: "numeric",
+                                                      minute: "numeric",
+                                                      hour12: true,
+                                                  })
+                                                : "Not checked out yet"}
                                         </TableCell>
                                         <TableCell>
                                             <Chip
                                                 color={
                                                     guestLog.check_out_time
                                                         ? "success"
-                                                        : "warning"
+                                                        : "danger"
                                                 }
+                                                startContent={
+                                                    guestLog.check_out_time ? (
+                                                        <CheckIcon />
+                                                    ) : (
+                                                        <FaTimesCircle className="w-5 h-5" />
+                                                    )
+                                                }
+                                                variant="flat"
                                             >
                                                 {guestLog.check_out_time
-                                                    ? "Checked Out"
-                                                    : "Not Checked Out yet"}
+                                                    ? "Done"
+                                                    : "No Checkout"}
                                             </Chip>
                                         </TableCell>
-                                        {/* <TableCell>
-                                            <div className="relative flex items-center justify-center gap-2 text-lg cursor-pointer active:opacity-50">
-                                                <Tooltip
-                                                    showArrow={true}
-                                                    color="danger"
-                                                    content="Delete"
-                                                >
-                                                    <span className="text-primary cursor-pointer active:opacity-50">
-                                                        <DeleteIcon
-                                                            className="text-danger"
-                                                            onClick={() =>
-                                                                handleDelete(
-                                                                    guestLog.id
-                                                                )
-                                                            }
-                                                        />
-                                                    </span>
-                                                </Tooltip>
-                                            </div>
-                                        </TableCell> */}
                                     </TableRow>
                                 ))}
                             </TableBody>

@@ -24,6 +24,7 @@ import { FaFilePdf } from "react-icons/fa";
 import Swal from "sweetalert2";
 import GuestRegisterForm from "./GuestRegisterForm";
 import axios from "axios";
+import { TbListDetails } from "react-icons/tb";
 
 export default function Index({ auth }) {
     const {
@@ -140,7 +141,7 @@ export default function Index({ auth }) {
         >
             <Head title="Guests" />
 
-            <div className="py-8">
+            <div className="py-8 p-2">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="flex flex-col gap-4">
                         <div className="flex justify-between gap-3 items-end mb-4">
@@ -195,8 +196,11 @@ export default function Index({ auth }) {
                             <TableColumn>NAME</TableColumn>
                             <TableColumn>EMAIL</TableColumn>
                             <TableColumn>PHONE</TableColumn>
+                            <TableColumn>ID TYPE</TableColumn>
+                            <TableColumn>ID NUMBER</TableColumn>
                             <TableColumn>COMPANY</TableColumn>
                             <TableColumn>ADDRESS</TableColumn>
+                            <TableColumn>DATE CREATED</TableColumn>
                             <TableColumn>ACTION</TableColumn>
                         </TableHeader>
                         <TableBody
@@ -217,8 +221,22 @@ export default function Index({ auth }) {
                                         <TableCell>{guest.name}</TableCell>
                                         <TableCell>{guest.email}</TableCell>
                                         <TableCell>{guest.phone}</TableCell>
+                                        <TableCell>{guest.id_type}</TableCell>
+                                        <TableCell>{guest.id_number}</TableCell>
                                         <TableCell>{guest.company}</TableCell>
                                         <TableCell>{guest.address}</TableCell>
+                                        <TableCell>
+                                            {new Date(
+                                                guest.created_at
+                                            ).toLocaleString([], {
+                                                year: "numeric",
+                                                month: "numeric",
+                                                day: "numeric",
+                                                hour: "numeric",
+                                                minute: "numeric",
+                                                hour12: true,
+                                            })}
+                                        </TableCell>
                                         <TableCell>
                                             <div className="flex justify-center text-xl cursor-pointer active:opacity-50">
                                                 <Tooltip
@@ -232,7 +250,7 @@ export default function Index({ auth }) {
                                                             openModal(guest)
                                                         }
                                                     >
-                                                        <EyeIcon className="text-primary" />
+                                                        <TbListDetails className="text-primary" />
                                                     </span>
                                                 </Tooltip>
                                                 {/* <Tooltip
@@ -278,7 +296,7 @@ export default function Index({ auth }) {
                                 {selectedGuestDetails && (
                                     <div className="flex flex-col gap-2">
                                         <Input
-                                            label="Name"
+                                            label="Guest Name"
                                             variant="bordered"
                                             value={selectedGuestDetails.name}
                                         />
@@ -295,7 +313,19 @@ export default function Index({ auth }) {
                                                 undefined
                                             }
                                         />
-
+                                        <Input
+                                            label="ID Type"
+                                            variant="bordered"
+                                            value={selectedGuestDetails.id_type}
+                                        />
+                                        <Input
+                                            label="ID Number"
+                                            variant="bordered"
+                                            value={
+                                                selectedGuestDetails.id_number ??
+                                                undefined
+                                            }
+                                        />
                                         <Input
                                             label="Company"
                                             variant="bordered"
@@ -317,7 +347,7 @@ export default function Index({ auth }) {
                                 )}
                             </ModalBody>
                             <ModalFooter>
-                                <Button color="primary" onPress={closeModal}>
+                                <Button color="danger" onPress={closeModal}>
                                     Close
                                 </Button>
                             </ModalFooter>

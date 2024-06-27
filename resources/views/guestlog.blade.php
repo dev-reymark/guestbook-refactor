@@ -55,6 +55,7 @@
         <table>
             <thead>
                 <tr>
+                    <th>#</th>
                     <th>Guest Name</th>
                     <th>Meeting With</th>
                     <th>Purpose of Visit</th>
@@ -63,13 +64,16 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($guests as $guest)
+                @foreach($guests as $index => $guest)
                 <tr>
+                    <td>{{ $index + 1 }}</td>
                     <td>{{ $guest->guest->name }}</td>
                     <td>{{ $guest->meeting_with }}</td>
                     <td>{{ $guest->purpose_of_visit }}</td>
-                    <td>{{ $guest->check_in_time }}</td>
-                    <td>{{ $guest->check_out_time }}</td>
+                    <!-- <td>{{ $guest->check_in_time }}</td> -->
+                    <td>{{ (new DateTime($guest->check_in_time))->setTimezone(new DateTimeZone('Asia/Manila'))->format('M d, Y h:i A') }}</td>
+                    <td>{{ (new DateTime($guest->check_out_time))->setTimezone(new DateTimeZone('Asia/Manila'))->format('M d, Y h:i A') }}</td>
+                    <!-- <td>{{ $guest->check_out_time }}</td> -->
                 </tr>
                 @endforeach
             </tbody>

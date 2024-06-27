@@ -272,7 +272,7 @@ const GuestReport = ({ auth }) => {
         >
             <Head title="Generate Report" />
 
-            <div className="py-8">
+            <div className="py-8 p-2">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <Card className="w-full">
                         <CardHeader className="flex gap-3">

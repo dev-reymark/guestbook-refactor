@@ -1,24 +1,46 @@
+import Header from "@/Components/Header";
 import { Head } from "@inertiajs/react";
 import {
     Card,
+    CardBody,
     CardFooter,
     CardHeader,
     Divider,
     Image,
     Link,
 } from "@nextui-org/react";
-import { FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
+import { FaRegUser, FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
 import { Navigation, Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+
+<style jsx>{`
+    .swiper-container {
+        width: 100%;
+        height: 100%;
+    }
+
+    .swiper-slide {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+    }
+`}</style>;
+
+// Import Swiper styles
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
+import { HiArrowTrendingDown, HiArrowTrendingUp } from "react-icons/hi2";
 
 export default function Home({ auth, mediaUrls = [] }) {
     const [currentTime, setCurrentTime] = useState(new Date());
+    const [totalRegisteredGuest, setTotalRegisteredGuest] = useState(null);
+    const [avgLogsInPast7Days, setAvgLogsInPast7Days] = useState(null);
     const audioRef = useRef(null);
 
     useEffect(() => {
@@ -64,9 +86,26 @@ export default function Home({ auth, mediaUrls = [] }) {
         day: "numeric",
     });
 
+    const calculatePercentageChange = (currentValue, previousValue) => {
+        if (
+            currentValue !== null &&
+            previousValue !== null &&
+            previousValue !== 0
+        ) {
+            return ((currentValue - previousValue) / previousValue) * 100;
+        }
+        return null;
+    };
+
     return (
         <>
             <Head title="Home" />
+            {/* <audio
+                ref={audioRef}
+                src="/assets/audio/datalogic.mp3"
+                autoPlay
+                loop
+            ></audio> */}
             <div className="relative min-h-screen p-5">
                 <img
                     className="absolute inset-0 w-full h-full object-cover pointer-events-none"
@@ -74,6 +113,8 @@ export default function Home({ auth, mediaUrls = [] }) {
                 />
 
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    {/* <Header auth={auth} /> */}
+
                     <main
                         className="mt-20 grid gap-4 lg:grid-cols-2"
                         style={{ height: "600px" }}
@@ -104,7 +145,7 @@ export default function Home({ auth, mediaUrls = [] }) {
                                             );
                                         }
                                     }}
-                                    style={{ width: "100%", height: "100%" }}
+                                    style={{ width: "100%", height: "100%" }} // Ensure the Swiper fills the entire card
                                 >
                                     {mediaUrls.map((mediaUrl, index) => (
                                         <SwiperSlide key={index}>

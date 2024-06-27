@@ -59,6 +59,7 @@
         <table>
             <thead>
                 <tr>
+                    <th>#</th>
                     <th>Name</th>
                     <th>ID Type</th>
                     <th>ID Number</th>
@@ -71,8 +72,9 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($guests as $guest)
+                @foreach($guests as $index => $guest)
                 <tr>
+                    <td>{{ $index + 1 }}</td>
                     <td>{{ $guest->name }}</td>
                     <td>{{ $guest->id_type }}</td>
                     <td>{{ $guest->id_number }}</td>
@@ -80,8 +82,7 @@
                     <td>{{ $guest->phone }}</td>
                     <td>{{ $guest->company }}</td>
                     <td>{{ $guest->address }}</td>
-                    <td>{{ $guest->created_at }}</td>
-                    <!-- <td>{{ $guest->updated_at }}</td> -->
+                    <td>{{ (new DateTime($guest->created_at))->setTimezone(new DateTimeZone('Asia/Manila'))->format('M d, Y h:i A') }}</td>
                 </tr>
                 @endforeach
             </tbody>
