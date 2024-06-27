@@ -12,6 +12,7 @@ import { TbFileUpload } from "react-icons/tb";
 const ScanQr = () => {
     const [scanResult, setScanResult] = useState(null);
     const [fileUpload, setFileUpload] = useState(null);
+    const [cameraFacingMode, setCameraFacingMode] = useState("environment"); // "environment" for rear camera
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -111,6 +112,11 @@ const ScanQr = () => {
         img.src = imageDataUrl;
     };
 
+    const toggleCameraFacingMode = () => {
+        const newFacingMode = cameraFacingMode === "environment" ? "user" : "environment";
+        setCameraFacingMode(newFacingMode);
+    };
+
     return (
         <div className="min-h-screen bg-[url(/assets/images/bg.png)] bg-cover flex items-center justify-center">
             <Head title="Scan QR Code" />
@@ -131,7 +137,8 @@ const ScanQr = () => {
                 <QrReader
                     delay={300}
                     onError={handleError}
-                    onResult={handleScan}
+                    onScan={handleScan}
+                    facingMode={cameraFacingMode}
                     style={{ width: "100%" }}
                 />
                 <div className="flex justify-end gap-2">
@@ -141,6 +148,9 @@ const ScanQr = () => {
                         startContent={<GrClose className="w-4 h-4" />}
                     >
                         Cancel
+                    </Button>
+                    <Button onClick={toggleCameraFacingMode}>
+                        Toggle Camera
                     </Button>
                 </div>
             </div>
