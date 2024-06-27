@@ -21,6 +21,7 @@ import { meetingWithOptions, purposeOfVisitOptions } from "@/Components/Data";
 import { HiOutlineSave } from "react-icons/hi";
 import { TiCancelOutline } from "react-icons/ti";
 import { GrClose } from "react-icons/gr";
+import { FcPrint } from "react-icons/fc";
 
 const GuestLogForm = ({ guests, name }) => {
     const [selectedGuestId, setSelectedGuestId] = useState("");
@@ -359,9 +360,7 @@ const GuestLogForm = ({ guests, name }) => {
                                 size="lg"
                                 color="danger"
                                 onClick={() => Inertia.visit("/")}
-                                startContent={
-                                    <GrClose className="w-4 h-4" />
-                                }
+                                startContent={<GrClose className="w-4 h-4" />}
                             >
                                 Cancel
                             </Button>
@@ -399,7 +398,7 @@ const GuestLogForm = ({ guests, name }) => {
                                 className="hidden sm:block"
                             >
                                 <span className="flex items-center gap-1">
-                                    <FaPrint className="w-4 h-4 text-success" />
+                                    <FcPrint className="w-5 h-5 text-success" />
                                     Print QR
                                 </span>
                             </Button>
@@ -414,7 +413,12 @@ const GuestLogForm = ({ guests, name }) => {
                                     Download QR
                                 </span>
                             </Button>
-                            <Button color="danger" onClick={handleClose}>
+
+                            <Button
+                                startContent={<GrClose className="w-4 h-4" />}
+                                color="danger"
+                                onClick={handleClose}
+                            >
                                 Close
                             </Button>
                         </div>
@@ -460,22 +464,17 @@ export const PrintableGuestPass = ({
             >
                 <div
                     style={{
-                        marginBottom: "10px",
+                        marginBottom: "5px",
                         textAlign: "left",
                         width: "100%",
                     }}
                 >
-                    <p>
-                        <strong>Guest ID:</strong> {guestName}
-                    </p>
-                    <p>
-                        <strong>Meeting With:</strong> {meetingWith}
-                    </p>
-                    <p>
-                        <strong>Purpose of Visit:</strong> {purposeOfVisit}
-                    </p>
-                    <p>
-                        <strong>Check In:</strong>{" "}
+                    <p className="">
+                        <strong>Guest ID:</strong> {guestName} <br />
+                        <strong>Meeting With:</strong> {meetingWith} <br />
+                        <strong>Purpose of Visit:</strong> {purposeOfVisit}{" "}
+                        <br />
+                        <strong>Check In:</strong>
                         {new Date(checkInTime).toLocaleString([], {
                             year: "numeric",
                             month: "numeric",
@@ -486,11 +485,17 @@ export const PrintableGuestPass = ({
                         })}
                     </p>
                 </div>
-                <div style={{ marginTop: "10px", marginRight: "40px" }}>
+                <div
+                    style={{
+                        marginTop: "10px",
+                        marginRight: "40px",
+                        marginBottom: "10px",
+                    }}
+                >
                     <img
                         src={qrCodeUrl}
                         alt="QR Code"
-                        style={{ width: "250px", height: "250px" }}
+                        style={{ width: "150px", height: "150px" }}
                     />
                 </div>
             </div>
