@@ -14,23 +14,32 @@ class GuestController extends Controller
 
     public function store(Request $request)
     {
+        // Validate the request
         $request->validate([
             'name' => 'required|string|max:255|unique:guests',
             'id_type' => 'nullable|string|max:255',
             'id_number' => 'nullable|string|max:255',
-            'email' => 'nullable|email',
+            'email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:20',
             'company' => 'required|string|max:255',
             'address' => 'nullable|string|max:255',
             'is_agreed' => 'required|boolean',
         ]);
 
+        // Create a new guest
         $guest = Guest::create($request->all());
 
-        return response()->json([
-            'guestId' => $guest->id,
-            'guestName' => $guest->name,
-        ]);
+        // Return a JSON response if the request expects JSON (e.g., from an API client)
+        if ($request->expectsJson()) {
+            return response()->json([
+                'guestId' => $guest->id,
+                'guestName' => $guest->name,
+            ]);
+        }
+
+        // Redirect to the create page with a success message if the request is from a web browser
+        return redirect()->route('guestlog.create', ['name' => $guest->name])
+            ->with('success', 'Guest registered successfully!');
     }
 
     public function index()

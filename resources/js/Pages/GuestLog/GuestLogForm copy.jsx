@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Head } from "@inertiajs/react";
 import {
     Autocomplete,
@@ -16,15 +16,13 @@ import QRCode from "qrcode.react";
 import { Inertia } from "@inertiajs/inertia";
 import { FaPrint } from "react-icons/fa";
 import ReactDOMServer from "react-dom/server";
-import { MdOutlineCancel, MdSimCardDownload } from "react-icons/md";
+import { MdSimCardDownload } from "react-icons/md";
 import { meetingWithOptions, purposeOfVisitOptions } from "@/Components/Data";
 import { HiOutlineSave } from "react-icons/hi";
-import { TiCancelOutline } from "react-icons/ti";
-import { GrClose } from "react-icons/gr";
 
-const GuestLogForm = ({ guests, name }) => {
+const GuestLogForm = ({ guests }) => {
     const [selectedGuestId, setSelectedGuestId] = useState("");
-    const [searchValue, setSearchValue] = useState(name);
+    const [searchValue, setSearchValue] = useState("");
     const [values, setValues] = useState({
         meeting_with: "",
         purpose_of_visit: "",
@@ -99,14 +97,6 @@ const GuestLogForm = ({ guests, name }) => {
             check_in_time: localIsoDateTime,
         }));
     };
-
-    useEffect(() => {
-        // Set the selectedGuestId based on the passed name
-        const guest = guests.find((guest) => guest.name === name);
-        if (guest) {
-            setSelectedGuestId(guest.id);
-        }
-    }, [name, guests]);
 
     const handleSearchChange = (e) => {
         setSearchValue(e.target.value);
@@ -227,7 +217,7 @@ const GuestLogForm = ({ guests, name }) => {
                                 }
                                 labelPlacement="outside"
                                 placeholder="Search your name here"
-                                description="If you don't see your name here, please click 'New Guest' button to register."
+                                description="If you don't see your name here, please click New Guest Button to register."
                                 selectedKey={selectedGuestId}
                                 onSelectionChange={setSelectedGuestId}
                                 isRequired
@@ -283,7 +273,7 @@ const GuestLogForm = ({ guests, name }) => {
                                     </>
                                 }
                                 labelPlacement="outside"
-                                placeholder="Select"
+                                placeholder="Select Purpose"
                                 value={values.purpose_of_visit}
                                 onChange={handlePurposeChange}
                                 isRequired
@@ -359,9 +349,6 @@ const GuestLogForm = ({ guests, name }) => {
                                 size="lg"
                                 color="danger"
                                 onClick={() => Inertia.visit("/")}
-                                startContent={
-                                    <GrClose className="w-4 h-4" />
-                                }
                             >
                                 Cancel
                             </Button>

@@ -5,6 +5,9 @@ import { Button, Spacer } from "@nextui-org/react";
 import Swal from "sweetalert2";
 import { Head } from "@inertiajs/react";
 import jsQR from "jsqr";
+import { GrClose } from "react-icons/gr";
+import { FaUpload } from "react-icons/fa";
+import { TbFileUpload } from "react-icons/tb";
 
 const ScanQr = () => {
     const [scanResult, setScanResult] = useState(null);
@@ -132,7 +135,11 @@ const ScanQr = () => {
                     style={{ width: "100%" }}
                 />
                 <div className="flex justify-end gap-2">
-                    <Button onPress={() => Inertia.visit("/")} color="danger">
+                    <Button
+                        onPress={() => Inertia.visit("/")}
+                        color="danger"
+                        startContent={<GrClose className="w-4 h-4" />}
+                    >
                         Cancel
                     </Button>
                 </div>
@@ -156,9 +163,10 @@ const ScanQr = () => {
                     <div className="mt-4">
                         <label
                             htmlFor="fileUpload"
-                            className="block text-sm font-medium text-gray-700"
+                            className="flex items-center justify-start py-2 gap-2 text-sm font-medium text-gray-700"
                         >
-                            Upload QR Code Image
+                            <span>Upload QR Code Image</span>
+                            <TbFileUpload className="w-6 h-6 text-success" />
                         </label>
                         <input
                             id="fileUpload"
@@ -174,6 +182,7 @@ const ScanQr = () => {
                         <Button
                             onPress={() => Inertia.visit("/")}
                             color="danger"
+                            startContent={<GrClose className="w-4 h-4" />}
                         >
                             Cancel
                         </Button>

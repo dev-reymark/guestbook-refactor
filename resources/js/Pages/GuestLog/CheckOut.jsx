@@ -14,6 +14,7 @@ import {
 } from "@nextui-org/react";
 import { TbLogout } from "react-icons/tb";
 import { Inertia } from "@inertiajs/inertia";
+import { GrClose } from "react-icons/gr";
 
 const CheckOut = () => {
     const { guestLog, guestLogId, checkoutUrl } = usePage().props;
@@ -204,6 +205,9 @@ const CheckOut = () => {
                                             size="lg"
                                             onPress={() => Inertia.visit("/")}
                                             color="danger"
+                                            startContent={
+                                                <GrClose className="w-4 h-4" />
+                                            }
                                         >
                                             Cancel
                                         </Button>

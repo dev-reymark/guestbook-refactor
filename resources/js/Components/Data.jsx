@@ -88,14 +88,15 @@ export const meetingWithOptions = [
 ];
 
 export const purposeOfVisitOptions = [
-    { value: "Business Meeting", label: "Business Meeting" },
     { value: "Job Interview", label: "Job Interview" },
     { value: "Delivery", label: "Delivery" },
     { value: "Pickup", label: "Pickup" },
+    { value: "Audit", label: "Audit" },
     { value: "Conference", label: "Conference" },
     { value: "Training", label: "Training" },
     { value: "Seminar", label: "Seminar" },
     { value: "Meeting", label: "Meeting" },
+    { value: "Business Meeting", label: "Business Meeting" },
     { value: "Company Event", label: "Company Event" },
     { value: "Other", label: "Other" },
 ];

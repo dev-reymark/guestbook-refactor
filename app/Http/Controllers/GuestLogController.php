@@ -8,13 +8,15 @@ use Illuminate\Http\Request;
 
 class GuestLogController extends Controller
 {
-    public function create()
-    {
-        $guests = Guest::all();
-        return inertia('GuestLog/GuestLogForm', [
-            'guests' => $guests
-        ]);
-    }
+    public function create(Request $request)
+{
+    $name = $request->query('name', ''); // Retrieve the name from query parameters
+    $guests = Guest::all();
+    return inertia('GuestLog/GuestLogForm', [
+        'guests' => $guests,
+        'name' => $name, // Pass the name to the component
+    ]);
+}
 
     public function store(Request $request, $guestId)
     {

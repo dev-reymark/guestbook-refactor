@@ -18,14 +18,10 @@ import {
 } from "@nextui-org/react";
 import Swal from "sweetalert2";
 import { FaRegUserCircle } from "react-icons/fa";
-import { MdSecurity } from "react-icons/md";
-import {
-    FiLock,
-    FiCheckCircle,
-    FiShield,
-    FiInfo,
-    FiShare,
-} from "react-icons/fi";
+import { TiUserAddOutline } from "react-icons/ti";
+import { FiLock, FiCheckCircle, FiShield } from "react-icons/fi";
+import { GrClose, GrFormNextLink } from "react-icons/gr";
+import { HiOutlineSave } from "react-icons/hi";
 
 export default function GuestRegisterForm() {
     const [values, setValues] = useState({
@@ -91,7 +87,7 @@ export default function GuestRegisterForm() {
         });
 
         // Navigate to another page or perform any other necessary action
-        Inertia.visit(route("guestlog.create"));
+        Inertia.visit(route("guestlog.create", { name: values.name }));
     };
 
     const handleCheckboxChange = () => {
@@ -130,6 +126,9 @@ export default function GuestRegisterForm() {
                 variant="shadow"
                 className="mt-6"
                 onPress={handleRegisterClick}
+                startContent={
+                    <TiUserAddOutline className="w-6 h-6 text-success" />
+                }
             >
                 New Guest
             </Button>
@@ -317,12 +316,16 @@ export default function GuestRegisterForm() {
                             color="primary"
                             onPress={handleAgree}
                             isDisabled={!isChecked}
+                            startContent={
+                                <GrFormNextLink className="w-7 h-8" />
+                            }
                         >
                             Continue
                         </Button>
                         <Button
                             color="danger"
                             onPress={() => setIsPrivacyModalOpen(false)}
+                            startContent={<GrClose className="w-4 h-4" />}
                         >
                             Cancel
                         </Button>
@@ -406,7 +409,7 @@ export default function GuestRegisterForm() {
                                     label="ID Type"
                                     value={values.id_type}
                                     onChange={handleChange}
-                                    placeholder="Select ID Type"
+                                    placeholder="Select"
                                 >
                                     <SelectItem value="passport" key="Passport">
                                         Passport
@@ -479,11 +482,22 @@ export default function GuestRegisterForm() {
                                 />
                             </div>
                             <div className="flex gap-3 justify-end mt-5 mb-5">
-                                <Button color="primary" type="submit">
+                                <Button
+                                    color="primary"
+                                    size="lg"
+                                    type="submit"
+                                    startContent={
+                                        <HiOutlineSave className="w-6 h-6 text-success" />
+                                    }
+                                >
                                     Submit
                                 </Button>
                                 <Button
                                     color="danger"
+                                    size="lg"
+                                    startContent={
+                                        <GrClose className="w-5 h-5" />
+                                    }
                                     onPress={() =>
                                         Inertia.visit(route("guestlog.create"))
                                     }
