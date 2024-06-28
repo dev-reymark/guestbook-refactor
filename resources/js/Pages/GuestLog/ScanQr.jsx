@@ -39,15 +39,41 @@ const ScanQr = () => {
             const audio = new Audio("/assets/audio/beep.mp3");
             audio.play();
 
-            Swal.fire({
-                title: "QR Code Scanned",
-                text: "Redirecting to checkout page...",
-                icon: "success",
-                showConfirmButton: false,
-                timer: 1500,
-            }).then(() => {
-                Inertia.visit(result);
-            });
+            // Instead of redirecting directly, make an API call to check the QR code
+            axios
+                .get(result)
+                .then((response) => {
+                    if (response.status === 200) {
+                        Swal.fire({
+                            title: "QR Code Scanned",
+                            text: "Redirecting to checkout page...",
+                            icon: "success",
+                            showConfirmButton: false,
+                            timer: 1500,
+                        }).then(() => {
+                            Inertia.visit(result);
+                        });
+                    }
+                })
+                .catch((error) => {
+                    if (error.response && error.response.status === 410) {
+                        Swal.fire({
+                            title: "QR Code Expired",
+                            text: error.response.data.message,
+                            icon: "error",
+                            confirmButtonText: "Scan Again",
+                        }).then(() => {
+                            Inertia.visit(route("guestlog.scan"));
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Error",
+                            text: "An error occurred while validating the QR code. Please try again.",
+                            icon: "error",
+                            confirmButtonText: "OK",
+                        });
+                    }
+                });
         }
     };
 
@@ -90,15 +116,41 @@ const ScanQr = () => {
                 const audio = new Audio("/assets/audio/beep.mp3");
                 audio.play();
 
-                Swal.fire({
-                    title: "QR Code Scanned",
-                    text: "Redirecting to checkout page...",
-                    icon: "success",
-                    showConfirmButton: false,
-                    timer: 1500,
-                }).then(() => {
-                    Inertia.visit(code.data);
-                });
+                // Instead of redirecting directly, make an API call to check the QR code
+                axios
+                    .get(code.data)
+                    .then((response) => {
+                        if (response.status === 200) {
+                            Swal.fire({
+                                title: "QR Code Scanned",
+                                text: "Redirecting to checkout page...",
+                                icon: "success",
+                                showConfirmButton: false,
+                                timer: 1500,
+                            }).then(() => {
+                                Inertia.visit(code.data);
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        if (error.response && error.response.status === 410) {
+                            Swal.fire({
+                                title: "QR Code Expired",
+                                text: error.response.data.message,
+                                icon: "error",
+                                confirmButtonText: "Scan Again",
+                            }).then(() => {
+                                Inertia.visit(route("guestlog.scan"));
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "Error",
+                                text: "An error occurred while validating the QR code. Please try again.",
+                                icon: "error",
+                                confirmButtonText: "OK",
+                            });
+                        }
+                    });
             } else {
                 Swal.fire({
                     title: "Error",

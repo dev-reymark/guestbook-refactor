@@ -4,19 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Models\GuestLog;
 use App\Models\Guest;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class GuestLogController extends Controller
 {
     public function create(Request $request)
-{
-    $name = $request->query('name', ''); // Retrieve the name from query parameters
-    $guests = Guest::all();
-    return inertia('GuestLog/GuestLogForm', [
-        'guests' => $guests,
-        'name' => $name, // Pass the name to the component
-    ]);
-}
+    {
+        $name = $request->query('name', ''); // Retrieve the name from query parameters
+        $guests = Guest::all();
+        return inertia('GuestLog/GuestLogForm', [
+            'guests' => $guests,
+            'name' => $name, // Pass the name to the component
+        ]);
+    }
 
     public function store(Request $request, $guestId)
     {
@@ -31,8 +32,9 @@ class GuestLogController extends Controller
         $guestLogData = $request->only(['meeting_with', 'purpose_of_visit', 'check_in_time', 'check_out_time']);
         $guestLogData['guest_id'] = $guestId;
         $guestLog = GuestLog::create($guestLogData);
-        
-        $qrCodeUrl = route('guest.log.show', ['guestLogId' => $guestLog->id]);
+
+        $timestamp = Carbon::now()->timestamp;
+        $qrCodeUrl = route('guest.log.show', ['guestLogId' => $guestLog->id, 'timestamp' => $timestamp]);
 
         return response()->json(['guestLogId' => $guestLog->id, 'qrCodeUrl' => $qrCodeUrl]);
     }
@@ -47,8 +49,17 @@ class GuestLogController extends Controller
         ]);
     }
 
-    public function show($guestLogId)
+    public function show(Request $request, $guestLogId)
     {
+
+        $timestamp = $request->query('timestamp');
+        $currentTimestamp = Carbon::now()->timestamp;
+
+        // Validate timestamp
+        if ($currentTimestamp - $timestamp > 86400) { // 86400 seconds = 24 hours
+            return response()->json(['message' => 'The QR code has expired.'], 410);
+        }
+
         $guestLog = GuestLog::with('guest')->findOrFail($guestLogId);
         $checkoutUrl = route('guest.log.checkout', ['guestLog' => $guestLogId]);
         return inertia('GuestLog/CheckOut', [
