@@ -57,7 +57,7 @@ class GuestLogController extends Controller
 
         // Validate timestamp
         if ($currentTimestamp - $timestamp > 86400) { // 86400 seconds = 24 hours
-            return response()->json(['message' => 'The QR code has expired.'], 410);
+            // return response()->json(['message' => 'The QR code has expired.'], 410);
         }
 
         $guestLog = GuestLog::with('guest')->findOrFail($guestLogId);
