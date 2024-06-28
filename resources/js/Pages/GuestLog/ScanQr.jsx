@@ -70,7 +70,9 @@ const ScanQr = () => {
                             title: "Error",
                             text: "An error occurred while validating the QR code. Please try again.",
                             icon: "error",
-                            confirmButtonText: "OK",
+                            confirmButtonText: "Scan Again",
+                        }).then(() => {
+                            Inertia.visit(route("guestlog.scan"));
                         });
                     }
                 });
@@ -147,7 +149,9 @@ const ScanQr = () => {
                                 title: "Error",
                                 text: "An error occurred while validating the QR code. Please try again.",
                                 icon: "error",
-                                confirmButtonText: "OK",
+                                confirmButtonText: "Scan Again",
+                            }).then(() => {
+                                Inertia.visit(route("guestlog.scan"));
                             });
                         }
                     });
