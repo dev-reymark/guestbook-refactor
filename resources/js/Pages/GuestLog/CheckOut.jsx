@@ -56,7 +56,9 @@ const CheckOut = () => {
 
                 Swal.fire({
                     title: "Success!",
-                    text: "You have successfully checked out.",
+                    text:
+                        response.data.message ||
+                        "You have successfully checked out.",
                     icon: "success",
                     timer: 5000, // Alert will close automatically after 3 seconds
                     showConfirmButton: false, // Hide the confirm button
@@ -66,9 +68,14 @@ const CheckOut = () => {
             })
             .catch((error) => {
                 console.error("Checkout error:", error);
+                // Extract the error message if available
+                const errorMessage =
+                    error.response?.data?.message ||
+                    "An error occurred while checking out.";
+
                 Swal.fire({
                     title: "Error!",
-                    text: "An error occurred while checking out.",
+                    text: errorMessage,
                     icon: "error",
                     confirmButtonText: "OK",
                 });

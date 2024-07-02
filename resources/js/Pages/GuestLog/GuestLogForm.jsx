@@ -487,7 +487,7 @@ export const PrintableGuestPass = ({
                 >
                     <p className="">
                         <strong>Guest ID:</strong> {guestID} <br />
-                        <strong>Guest Name:</strong> {guestName} <br />
+                        {/* <strong>Guest Name:</strong> {guestName} <br /> */}
                         <strong>Meeting With:</strong> {meetingWith} <br />
                         <strong>Purpose of Visit:</strong> {purposeOfVisit}{" "}
                         <br />
