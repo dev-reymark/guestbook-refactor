@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('company')->nullable();
             $table->string('address')->nullable();
             $table->boolean('is_agreed')->default(false);
+            $table->text('photo')->nullable();
             $table->timestamps();
         });
     }

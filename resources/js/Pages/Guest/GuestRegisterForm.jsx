@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Inertia } from "@inertiajs/inertia";
 import {
     Input,
@@ -15,6 +15,7 @@ import {
     ListboxItem,
     ListboxSection,
     Checkbox,
+    Image,
 } from "@nextui-org/react";
 import Swal from "sweetalert2";
 import { FaRegUserCircle } from "react-icons/fa";
@@ -22,6 +23,9 @@ import { TiUserAddOutline } from "react-icons/ti";
 import { FiLock, FiCheckCircle, FiShield } from "react-icons/fi";
 import { GrClose, GrFormNextLink } from "react-icons/gr";
 import { HiOutlineSave } from "react-icons/hi";
+import Webcam from "react-webcam";
+import { TbCapture } from "react-icons/tb";
+import { IoCameraOutline } from "react-icons/io5";
 
 export default function GuestRegisterForm() {
     const [values, setValues] = useState({
@@ -39,6 +43,9 @@ export default function GuestRegisterForm() {
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
     const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
     const [isNameValid, setIsNameValid] = useState(true); // Initially assume name is valid
+    const [isWebcamOpen, setIsWebcamOpen] = useState(false);
+    const [capturedImage, setCapturedImage] = useState(null);
+    const webcamRef = useRef(null);
 
     const handleChange = async (e) => {
         const { name, value } = e.target;
@@ -75,6 +82,12 @@ export default function GuestRegisterForm() {
             return; // Exit function early
         }
 
+        // Add captured image to the form values
+        const formData = {
+            ...values,
+            photo: capturedImage,
+        };
+
         // If name is available, proceed with form submission
         await Inertia.post("/guest/register", values);
 
@@ -88,6 +101,16 @@ export default function GuestRegisterForm() {
 
         // Navigate to another page or perform any other necessary action
         Inertia.visit(route("guestlog.create", { name: values.name }));
+    };
+
+    const captureImage = () => {
+        const imageSrc = webcamRef.current.getScreenshot();
+        setCapturedImage(imageSrc);
+        setValues((prevValues) => ({
+            ...prevValues,
+            photo: imageSrc, // Store the captured image in values
+        }));
+        setIsWebcamOpen(false);
     };
 
     const handleCheckboxChange = () => {
@@ -361,7 +384,13 @@ export default function GuestRegisterForm() {
                     </ModalHeader>
                     <ModalBody>
                         <form onSubmit={handleSubmit}>
-                            <div className="mb-4">
+                            <p className="text-xs my-1">
+                                <span className="font-bold text-danger">
+                                    (*)
+                                </span>{" "}
+                                This red mark indicates a required field.
+                            </p>
+                            <div className="mb-2">
                                 <Input
                                     type="text"
                                     name="name"
@@ -403,6 +432,7 @@ export default function GuestRegisterForm() {
                                     isRequired
                                 />
                             </div>
+
                             <div className="mb-4">
                                 <Select
                                     name="id_type"
@@ -481,6 +511,26 @@ export default function GuestRegisterForm() {
                                     }
                                 />
                             </div>
+
+                            <div className="mb-4 space-y-2">
+                                <div className="space-y-2">
+                                    <Button
+                                        onPress={() => setIsWebcamOpen(true)}
+                                        startContent={
+                                            <IoCameraOutline className="w-6 h-6 text-success" />
+                                        }
+                                    >
+                                        Capture Photo
+                                    </Button>
+                                    {capturedImage && (
+                                        <Image
+                                            src={capturedImage}
+                                            alt="Captured"
+                                        />
+                                    )}
+                                </div>
+                            </div>
+
                             <div className="flex gap-3 justify-end mt-5 mb-5">
                                 <Button
                                     color="primary"
@@ -507,6 +557,46 @@ export default function GuestRegisterForm() {
                             </div>
                         </form>
                     </ModalBody>
+                </ModalContent>
+            </Modal>
+
+            {/* Webcam Modal */}
+            <Modal
+                isOpen={isWebcamOpen}
+                onOpenChange={setIsWebcamOpen}
+                size="lg"
+            >
+                <ModalContent>
+                    <ModalHeader>Capture Photo</ModalHeader>
+                    <ModalBody>
+                        <Webcam
+                            audio={false}
+                            ref={webcamRef}
+                            screenshotFormat="image/jpeg"
+                            width="100%"
+                            videoConstraints={{
+                                facingMode: "user",
+                            }}
+                        />
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button
+                            color="primary"
+                            onPress={captureImage}
+                            startContent={
+                                <TbCapture className="w-5 h-5 text-success" />
+                            }
+                        >
+                            Capture
+                        </Button>
+                        <Button
+                            color="danger"
+                            onPress={() => setIsWebcamOpen(false)}
+                            startContent={<GrClose />}
+                        >
+                            Cancel
+                        </Button>
+                    </ModalFooter>
                 </ModalContent>
             </Modal>
         </div>

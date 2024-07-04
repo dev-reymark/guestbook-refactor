@@ -4,6 +4,7 @@ import {
     Autocomplete,
     AutocompleteItem,
     Button,
+    Image,
     Input,
     Select,
     SelectItem,
@@ -72,6 +73,7 @@ const GuestLogForm = ({ guests, name }) => {
             const guestLogId = response.data.guestLogId;
             const qrCodeUrl = response.data.qrCodeUrl;
             const guestName = response.data.guestName;
+            const guestPhoto = response.data.guestPhoto;
 
             // Extract the first word from the guest's name
             const firstName = guestName.split(" ")[0];
@@ -92,6 +94,7 @@ const GuestLogForm = ({ guests, name }) => {
             setValues((prevValues) => ({
                 ...prevValues,
                 guestName: firstName,
+                guestPhoto: guestPhoto,
                 // Full guest name
                 // guestName: guestName
             }));
@@ -188,6 +191,7 @@ const GuestLogForm = ({ guests, name }) => {
             <PrintableGuestPass
                 guestID={selectedGuestId}
                 guestName={values.guestName}
+                guestPhoto={values.guestPhoto}
                 meetingWith={values.meeting_with}
                 purposeOfVisit={
                     values.purpose_of_visit === "Other"
@@ -453,24 +457,45 @@ export const PrintableGuestPass = ({
     purposeOfVisit,
     checkInTime,
     qrCodeUrl,
+    guestPhoto,
 }) => {
     return (
         <div
             style={{
+                position: "relative",
                 padding: "10px",
                 fontFamily: "Arial, sans-serif",
-                width: "80mm",
-                maxWidth: "80mm",
+                width: "70mm",
+                maxWidth: "70mm",
                 wordWrap: "break-word",
+                // backgroundColor: "#f0f0f0",
+                border: "1px solid #ccc",
+                borderRadius: "8px",
             }}
         >
-            <h2 style={{ textAlign: "center", marginRight: "40px" }}>
-                VISITOR
-            </h2>
-            <p style={{ textAlign: "center", marginRight: "40px" }}>
-                Hello, I'm {guestName}
-            </p>
-            <hr style={{ marginRight: "40px" }} />
+            {/* Watermark Logo */}
+            <div
+                style={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: 'translate(-50%, -50%) rotate(-30deg)',
+                    opacity: "0.2", // Adjust opacity to make it more subtle
+                    zIndex: "-1", // Behind the content
+                }}
+            >
+                <Image
+                    src="/assets/images/logo-new.png" // Replace with your logo path
+                    alt="Watermark Logo"
+                    style={{
+                        width: "500px", // Adjust size as needed
+                        height: "auto", // Maintain aspect ratio
+                        pointerEvents: "none", // Ensure the logo doesn't interfere with clicks
+                    }}
+                />
+            </div>
+
+            {/* Content of the Guest Pass */}
             <div
                 style={{
                     display: "flex",
@@ -478,20 +503,34 @@ export const PrintableGuestPass = ({
                     alignItems: "center",
                 }}
             >
-                <div
-                    style={{
-                        marginBottom: "5px",
-                        textAlign: "left",
-                        width: "100%",
-                    }}
-                >
-                    <p className="">
+                <h2 style={{ textAlign: "center", margin: "10px 0" }}>
+                    VISITOR
+                </h2>
+                {guestPhoto && (
+                    <div style={{ textAlign: "center", marginBottom: "10px" }}>
+                        <img
+                            src={guestPhoto}
+                            alt={guestName}
+                            width={100}
+                            height={100}
+                            style={{
+                                borderRadius: "50%",
+                                marginBottom: "5px",
+                            }}
+                        />
+                    </div>
+                )}
+                <p style={{ textAlign: "center", marginBottom: "5px" }}>
+                    Hello, I'm {guestName}
+                </p>
+                <hr style={{ margin: "10px 0", width: "80%" }} />
+                <div style={{ textAlign: "left", margin: "5px 10px" }}>
+                    <p>
                         <strong>Guest ID:</strong> {guestID} <br />
-                        {/* <strong>Guest Name:</strong> {guestName} <br /> */}
                         <strong>Meeting With:</strong> {meetingWith} <br />
                         <strong>Purpose of Visit:</strong> {purposeOfVisit}{" "}
                         <br />
-                        <strong>Check In:</strong>
+                        <strong>Check In:</strong>{" "}
                         {new Date(checkInTime).toLocaleString([], {
                             year: "numeric",
                             month: "numeric",
@@ -502,31 +541,16 @@ export const PrintableGuestPass = ({
                         })}
                     </p>
                 </div>
-                <div
-                    style={{
-                        marginTop: "10px",
-                        marginRight: "40px",
-                        marginBottom: "10px",
-                    }}
-                >
+                <div style={{ margin: "10px 0" }}>
                     <img
                         src={qrCodeUrl}
                         alt="QR Code"
-                        style={{ width: "150px", height: "150px" }}
+                        style={{ width: "120px", height: "120px" }}
                     />
                 </div>
-            </div>
-            <hr style={{ marginRight: "40px" }} />
-            <div
-                style={{
-                    textAlign: "center",
-                    marginTop: "10px",
-                    marginRight: "40px",
-                }}
-            >
-                <p>
-                    Scan this QR code to check out. Please keep it with
-                    you.Thank you for visit!
+                <hr style={{ margin: "10px 0", width: "80%" }} />
+                <p style={{ textAlign: "center", marginTop: "5px" }}>
+                    Scan this QR code to check out.
                 </p>
             </div>
         </div>

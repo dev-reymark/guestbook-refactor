@@ -18,6 +18,8 @@ import {
     ModalFooter,
     ModalHeader,
     Pagination,
+    Image,
+    Divider,
 } from "@nextui-org/react";
 import React from "react";
 import { FaFilePdf } from "react-icons/fa";
@@ -285,6 +287,7 @@ export default function Index({ auth }) {
                 onOpenChange={closeModal}
                 hideCloseButton
                 backdrop="blur"
+                scrollBehavior="inside"
             >
                 <ModalContent>
                     {() => (
@@ -298,32 +301,41 @@ export default function Index({ auth }) {
                                         <Input
                                             label="Guest Name"
                                             variant="bordered"
-                                            value={selectedGuestDetails.name}
+                                            value={
+                                                selectedGuestDetails.name ??
+                                                "No name provided"
+                                            }
                                         />
                                         <Input
                                             label="Email"
                                             variant="bordered"
-                                            value={selectedGuestDetails.email}
+                                            value={
+                                                selectedGuestDetails.email ??
+                                                "No email provided"
+                                            }
                                         />
                                         <Input
                                             label="Phone"
                                             variant="bordered"
                                             value={
                                                 selectedGuestDetails.phone ??
-                                                undefined
+                                                "No phone provided"
                                             }
                                         />
                                         <Input
                                             label="ID Type"
                                             variant="bordered"
-                                            value={selectedGuestDetails.id_type}
+                                            value={
+                                                selectedGuestDetails.id_type ??
+                                                "No ID provided"
+                                            }
                                         />
                                         <Input
                                             label="ID Number"
                                             variant="bordered"
                                             value={
                                                 selectedGuestDetails.id_number ??
-                                                undefined
+                                                "No ID number provided"
                                             }
                                         />
                                         <Input
@@ -331,7 +343,7 @@ export default function Index({ auth }) {
                                             variant="bordered"
                                             value={
                                                 selectedGuestDetails.company ??
-                                                undefined
+                                                "No company provided"
                                             }
                                         />
 
@@ -340,8 +352,20 @@ export default function Index({ auth }) {
                                             variant="bordered"
                                             value={
                                                 selectedGuestDetails.address ??
-                                                undefined
+                                                "No address provided"
                                             }
+                                        />
+
+                                        <hr className="my-3" />
+
+                                        <p>Guest Photo</p>
+
+                                        <Image
+                                            src={selectedGuestDetails.photo}
+                                            alt="Guest Photo"
+                                            // width={300}
+                                            // height={200}
+                                            fallbackSrc="https://via.placeholder.com/300x200"
                                         />
                                     </div>
                                 )}
