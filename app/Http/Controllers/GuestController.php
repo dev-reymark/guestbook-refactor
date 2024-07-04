@@ -24,6 +24,7 @@ class GuestController extends Controller
             'company' => 'required|string|max:255',
             'address' => 'nullable|string|max:255',
             'is_agreed' => 'required|boolean',
+            'photo' => 'nullable|string|',
         ]);
 
         // Create a new guest

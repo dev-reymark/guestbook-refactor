@@ -39,7 +39,12 @@ class GuestLogController extends Controller
         $timestamp = Carbon::now()->timestamp;
         $qrCodeUrl = route('guest.log.show', ['guestLogId' => $guestLog->id, 'timestamp' => $timestamp]);
 
-        return response()->json(['guestLogId' => $guestLog->id, 'qrCodeUrl' => $qrCodeUrl, 'guestName' => $guest->name]);
+        return response()->json([
+            'guestLogId' => $guestLog->id,
+            'qrCodeUrl' => $qrCodeUrl,
+            'guestName' => $guest->name,
+            'guestPhoto' => $guest->photo
+        ]);
     }
 
 

@@ -10,7 +10,7 @@ class Guest extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'id_type', 'id_number', 'email', 'phone', 'company', 'address', 'is_agreed',
+        'name', 'id_type', 'id_number', 'email', 'phone', 'company', 'address', 'is_agreed', 'photo',
     ];
 
     public function guestLogs()
