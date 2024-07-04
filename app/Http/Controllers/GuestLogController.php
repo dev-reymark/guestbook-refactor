@@ -33,10 +33,13 @@ class GuestLogController extends Controller
         $guestLogData['guest_id'] = $guestId;
         $guestLog = GuestLog::create($guestLogData);
 
+        // Fetch the guest's name
+        $guest = Guest::findOrFail($guestId);
+
         $timestamp = Carbon::now()->timestamp;
         $qrCodeUrl = route('guest.log.show', ['guestLogId' => $guestLog->id, 'timestamp' => $timestamp]);
 
-        return response()->json(['guestLogId' => $guestLog->id, 'qrCodeUrl' => $qrCodeUrl]);
+        return response()->json(['guestLogId' => $guestLog->id, 'qrCodeUrl' => $qrCodeUrl, 'guestName' => $guest->name]);
     }
 
 

@@ -35,7 +35,7 @@ const GuestLogForm = ({ guests, name }) => {
     const [qrCodeUrl, setQrCodeUrl] = useState("");
     const [showQrCode, setShowQrCode] = useState(false);
     const [otherPurpose, setOtherPurpose] = useState(""); // State for other purpose input
-
+    const [guestName, setGuestName] = useState(name);
     const handleChange = (e) => {
         const { name, value } = e.target;
         setValues({
@@ -71,6 +71,12 @@ const GuestLogForm = ({ guests, name }) => {
             );
             const guestLogId = response.data.guestLogId;
             const qrCodeUrl = response.data.qrCodeUrl;
+            const guestName = response.data.guestName;
+
+            // Extract the first word from the guest's name
+            const firstName = guestName.split(" ")[0];
+            // Get the guest's name from response
+            // const guestName = response.data.guestName;
 
             Swal.fire({
                 title: "Success",
@@ -81,6 +87,14 @@ const GuestLogForm = ({ guests, name }) => {
 
             setQrCodeUrl(qrCodeUrl);
             setShowQrCode(true);
+
+            // Store the guest's name in the state for use in the printable pass
+            setValues((prevValues) => ({
+                ...prevValues,
+                guestName: firstName,
+                // Full guest name
+                // guestName: guestName
+            }));
         } catch (error) {
             Swal.fire(
                 "Error",
@@ -172,7 +186,8 @@ const GuestLogForm = ({ guests, name }) => {
 
         const printableContent = ReactDOMServer.renderToString(
             <PrintableGuestPass
-                guestName={selectedGuestId}
+                guestID={selectedGuestId}
+                guestName={values.guestName}
                 meetingWith={values.meeting_with}
                 purposeOfVisit={
                     values.purpose_of_visit === "Other"
@@ -432,6 +447,7 @@ const GuestLogForm = ({ guests, name }) => {
 export default GuestLogForm;
 
 export const PrintableGuestPass = ({
+    guestID,
     guestName,
     meetingWith,
     purposeOfVisit,
@@ -449,10 +465,10 @@ export const PrintableGuestPass = ({
             }}
         >
             <h2 style={{ textAlign: "center", marginRight: "40px" }}>
-                Guest Pass
+                VISITOR
             </h2>
             <p style={{ textAlign: "center", marginRight: "40px" }}>
-                Scan this QR code to check out. Please keep it with you.
+                Hello, I'm {guestName}
             </p>
             <hr style={{ marginRight: "40px" }} />
             <div
@@ -470,7 +486,8 @@ export const PrintableGuestPass = ({
                     }}
                 >
                     <p className="">
-                        <strong>Guest ID:</strong> {guestName} <br />
+                        <strong>Guest ID:</strong> {guestID} <br />
+                        <strong>Guest Name:</strong> {guestName} <br />
                         <strong>Meeting With:</strong> {meetingWith} <br />
                         <strong>Purpose of Visit:</strong> {purposeOfVisit}{" "}
                         <br />
@@ -507,7 +524,10 @@ export const PrintableGuestPass = ({
                     marginRight: "40px",
                 }}
             >
-                <p>Thank you for visit!</p>
+                <p>
+                    Scan this QR code to check out. Please keep it with
+                    you.Thank you for visit!
+                </p>
             </div>
         </div>
     );
