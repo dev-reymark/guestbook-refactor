@@ -14,10 +14,12 @@ import {
     Spacer,
     Image,
     Tooltip,
+    Avatar,
 } from "@nextui-org/react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { LiaUserEditSolid } from "react-icons/lia";
+import { GoOrganization } from "react-icons/go";
 
 const Setting = ({ auth }) => {
     const [settings, setSettings] = useState({});
@@ -91,7 +93,7 @@ const Setting = ({ auth }) => {
                 </h2>
             }
         >
-            <Head title="Generate Report" />
+            <Head title="Configuration" />
             <div className="max-w-4xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
                 <div className="bg-white rounded-xl shadow dark:bg-neutral-900">
                     <div className="relative h-40 rounded-t-xl bg-[url('https://preline.co/assets/svg/examples/abstract-bg-1.svg')] bg-no-repeat bg-cover bg-center">
@@ -104,7 +106,7 @@ const Setting = ({ auth }) => {
                             >
                                 <Button
                                     onPress={onOpen}
-                                    color="primary"
+                                    color="success"
                                     variant="light"
                                     isIconOnly
                                 >
@@ -118,10 +120,13 @@ const Setting = ({ auth }) => {
                         <div className="space-y-4 sm:space-y-6">
                             <div>
                                 <div className="grid sm:flex sm:items-center sm:gap-x-5">
-                                    <Image
+                                    <Avatar
                                         className="-mt-8 relative z-10 inline-block size-24 mx-auto sm:mx-0 rounded-full ring-4 ring-white dark:ring-neutral-900"
                                         src={form.logo}
                                         alt={form.company_name}
+                                        size="lg"
+                                        showFallback
+                                        fallback={<GoOrganization className="w-8 h-8 text-primary" />}
                                     />
                                 </div>
                             </div>
@@ -131,7 +136,7 @@ const Setting = ({ auth }) => {
                                 <Input
                                     label="Company Name"
                                     labelPlacement="outside"
-                                    placeholder="WebWeaver Ph"
+                                    placeholder="Example, Inc."
                                     value={form.company_name}
                                     onChange={handleChange}
                                     name="company_name"

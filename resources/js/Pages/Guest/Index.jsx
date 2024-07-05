@@ -20,6 +20,7 @@ import {
     Pagination,
     Image,
     Divider,
+    Avatar,
 } from "@nextui-org/react";
 import React from "react";
 import { FaFilePdf } from "react-icons/fa";
@@ -298,6 +299,17 @@ export default function Index({ auth }) {
                             <ModalBody>
                                 {selectedGuestDetails && (
                                     <div className="flex flex-col gap-2">
+                                        <div className="flex justify-center">
+                                            <Avatar
+                                                src={
+                                                    selectedGuestDetails.photo ??
+                                                    "/assets/images/guest-profile-fallback.png"
+                                                }
+                                                className="w-24 h-24"
+                                                radius="full"
+                                            />
+                                        </div>
+
                                         <Input
                                             label="Guest Name"
                                             variant="bordered"
@@ -306,6 +318,7 @@ export default function Index({ auth }) {
                                                 "No name provided"
                                             }
                                         />
+
                                         <Input
                                             label="Email"
                                             variant="bordered"
@@ -354,18 +367,6 @@ export default function Index({ auth }) {
                                                 selectedGuestDetails.address ??
                                                 "No address provided"
                                             }
-                                        />
-
-                                        <hr className="my-3" />
-
-                                        <p>Guest Photo</p>
-
-                                        <Image
-                                            src={selectedGuestDetails.photo}
-                                            alt="Guest Photo"
-                                            // width={300}
-                                            // height={200}
-                                            fallbackSrc="https://via.placeholder.com/300x200"
                                         />
                                     </div>
                                 )}

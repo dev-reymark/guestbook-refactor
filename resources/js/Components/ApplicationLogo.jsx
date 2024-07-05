@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Image } from "@nextui-org/react";
+import { Avatar, Image } from "@nextui-org/react";
+import { GoOrganization } from "react-icons/go";
 
 export default function ApplicationLogo() {
     const [settings, setSettings] = useState({
@@ -22,6 +23,11 @@ export default function ApplicationLogo() {
         fetchSettings();
     }, []);
     return (
-        <Image src={logo} alt="Company Logo" className="block h-14 w-auto" />
+        <Avatar
+            src={logo}
+            alt="Company Logo"
+            showFallback
+            fallback={<GoOrganization className="w-6 h-6 text-primary" />}
+        />
     );
 }
