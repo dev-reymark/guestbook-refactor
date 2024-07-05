@@ -17,7 +17,7 @@ import "swiper/css/scrollbar";
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 
-export default function Home({ mediaUrls = [] }) {
+export default function Home({ auth, mediaUrls = [] }) {
     const [currentTime, setCurrentTime] = useState(new Date());
     const audioRef = useRef(null);
 
@@ -28,6 +28,20 @@ export default function Home({ mediaUrls = [] }) {
             });
         }
     }, []);
+    useEffect(() => {
+        fetchGuestData();
+    }, []);
+
+    const fetchGuestData = async () => {
+        try {
+            const response = await axios.get("/fetch-guest-data");
+            const data = response.data;
+            setTotalRegisteredGuest(data.totalRegisteredGuest);
+            setAvgLogsInPast7Days(data.avgLogsInPast7Days);
+        } catch (error) {
+            console.error("Error fetching guest data:", error);
+        }
+    };
 
     useEffect(() => {
         const interval = setInterval(() => {

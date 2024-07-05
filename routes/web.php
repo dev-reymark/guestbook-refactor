@@ -10,6 +10,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\SettingController;
 
 Route::get('/', function () {
     return Inertia::render('Home', [
@@ -61,5 +62,9 @@ Route::delete('/uploads/{id}', [UploadController::class, 'destroy']);
 
 Route::get('/scan-qr', [GuestLogController::class, 'scanQrCode'])->name('guestlog.scan');
 Route::get('/check-name/{name}', [GuestController::class, 'checkNameAvailability']);
+
+Route::get('/config', [SettingController::class, 'getSettings']);
+Route::post('/config', [SettingController::class, 'updateSettings']);
+Route::get('/configuration', [SettingController::class, 'routeSettings'])->name('settings');
 
 require __DIR__ . '/auth.php';

@@ -62,6 +62,12 @@ export default function Authenticated({ user, header, children }) {
                                 >
                                     Reports
                                 </NavLink>
+                                <NavLink
+                                    href={route("settings")}
+                                    active={route().current("settings")}
+                                >
+                                    Settings
+                                </NavLink>
                             </div>
                         </div>
 
@@ -182,6 +188,12 @@ export default function Authenticated({ user, header, children }) {
                             active={route().current("report.create")}
                         >
                             Reports
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route("settings")}
+                            active={route().current("settings")}
+                        >
+                            Settings
                         </ResponsiveNavLink>
                     </div>
 
