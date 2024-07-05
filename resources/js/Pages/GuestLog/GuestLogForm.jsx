@@ -23,6 +23,7 @@ import { HiOutlineSave } from "react-icons/hi";
 import { TiCancelOutline } from "react-icons/ti";
 import { GrClose } from "react-icons/gr";
 import { FcPrint } from "react-icons/fc";
+import { TbLogin } from "react-icons/tb";
 
 const GuestLogForm = ({ guests, name }) => {
     const [selectedGuestId, setSelectedGuestId] = useState("");
@@ -37,6 +38,7 @@ const GuestLogForm = ({ guests, name }) => {
     const [showQrCode, setShowQrCode] = useState(false);
     const [otherPurpose, setOtherPurpose] = useState(""); // State for other purpose input
     const [guestName, setGuestName] = useState(name);
+    const [expirationDate, setExpirationDate] = useState("");
     const handleChange = (e) => {
         const { name, value } = e.target;
         setValues({
@@ -74,6 +76,7 @@ const GuestLogForm = ({ guests, name }) => {
             const qrCodeUrl = response.data.qrCodeUrl;
             const guestName = response.data.guestName;
             const guestPhoto = response.data.guestPhoto;
+            const expirationDate = response.data.expirationDate;
 
             // Extract the first word from the guest's name
             const firstName = guestName.split(" ")[0];
@@ -89,6 +92,7 @@ const GuestLogForm = ({ guests, name }) => {
 
             setQrCodeUrl(qrCodeUrl);
             setShowQrCode(true);
+            setExpirationDate(expirationDate);
 
             // Store the guest's name in the state for use in the printable pass
             setValues((prevValues) => ({
@@ -200,7 +204,8 @@ const GuestLogForm = ({ guests, name }) => {
                 }
                 checkInTime={values.check_in_time}
                 checkOutTime={values.check_out_time}
-                qrCodeUrl={qrCodeDataUrl}
+                qrCode={qrCodeDataUrl}
+                expirationDate={expirationDate}
             />
         );
 
@@ -220,231 +225,253 @@ const GuestLogForm = ({ guests, name }) => {
     };
 
     return (
-        <div className="min-h-screen bg-[url(/assets/images/bg.png)] bg-cover">
-            <Head title="Log Guest" />
-            <div className="py-12 p-4 flex justify-center items-center">
-                <div className="max-w-2xl w-full mx-auto p-4 bg-white shadow-md rounded-lg py-5">
-                    <div className="text-center  mb-5">
-                        <h2 className="text-3xl font-bold mb-4 ">
-                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary relative">
-                                Guest Log Form
-                                <span className="absolute  left-1/2 transform -translate-x-1/2 -bottom-2 h-[3px] w-16 bg-[#2aefe6]"></span>
-                            </span>
-                        </h2>
-                        <p className="text-sm font-light">
-                            Please fill out the form below to log your visit
-                            today.
-                        </p>
-                    </div>
-
-                    <form onSubmit={handleSubmit}>
-                        <div className="flex gap-3 mb-4">
-                            <Autocomplete
-                                label={
-                                    <>
-                                        <b>Guest Name</b>
-                                    </>
-                                }
-                                labelPlacement="outside"
-                                placeholder="Search your name here"
-                                description="If you don't see your name here, please click 'New Guest' button to register."
-                                selectedKey={selectedGuestId}
-                                onSelectionChange={setSelectedGuestId}
-                                isRequired
-                                onInput={handleSearchChange}
-                            >
-                                {searchValue &&
-                                    filteredGuests.map((guest) => (
-                                        <AutocompleteItem
-                                            key={guest.id}
-                                            value={guest.id}
-                                        >
-                                            {guest.name}
-                                        </AutocompleteItem>
-                                    ))}
-                            </Autocomplete>
-
-                            <GuestRegisterForm />
+        <>
+            <div className="min-h-screen bg-[url(/assets/images/bg.png)] bg-cover">
+                <Head title="Log Guest" />
+                <div className="py-12 p-4 flex justify-center items-center">
+                    <div className="max-w-2xl w-full mx-auto p-4 bg-white shadow-md rounded-lg py-5">
+                        <div className="text-center  mb-5">
+                            <h2 className="text-3xl font-bold mb-4 ">
+                                <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary relative">
+                                    Guest Log Form
+                                    <span className="absolute  left-1/2 transform -translate-x-1/2 -bottom-2 h-[3px] w-16 bg-[#2aefe6]"></span>
+                                </span>
+                            </h2>
+                            <p className="text-sm font-light">
+                                Please fill out the form below to log your visit
+                                today.
+                            </p>
                         </div>
-                        <Spacer y={2} />
-                        <div className="mb-4">
-                            <Select
-                                label={
-                                    <>
-                                        <b>Meeting With</b>
-                                    </>
-                                }
-                                labelPlacement="outside"
-                                placeholder="Select"
-                                value={values.meeting_with}
-                                onChange={(e) =>
-                                    setValues({
-                                        ...values,
-                                        meeting_with: e.target.value,
-                                    })
-                                }
-                            >
-                                {meetingWithOptions.map((option) => (
-                                    <SelectItem
-                                        key={option.value}
-                                        value={option.value}
-                                    >
-                                        {`${option.label} - ${option.position}`}
-                                    </SelectItem>
-                                ))}
-                            </Select>
-                        </div>
-                        <Spacer y={2} />
-                        <div className="mb-4">
-                            <Select
-                                label={
-                                    <>
-                                        <b>Purpose of Visit</b>
-                                    </>
-                                }
-                                labelPlacement="outside"
-                                placeholder="Select"
-                                value={values.purpose_of_visit}
-                                onChange={handlePurposeChange}
-                                isRequired
-                            >
-                                {purposeOfVisitOptions.map((option) => (
-                                    <SelectItem
-                                        key={option.value}
-                                        value={option.value}
-                                    >
-                                        {option.label}
-                                    </SelectItem>
-                                ))}
-                            </Select>
-                            <Spacer y={2} />
-                            {/* Render input for other purpose */}
-                            {values.purpose_of_visit === "Other" && (
-                                <Input
-                                    placeholder="Please input your purpose of visit"
-                                    value={otherPurpose}
-                                    onChange={(e) =>
-                                        setOtherPurpose(e.target.value)
+
+                        <form onSubmit={handleSubmit}>
+                            <div className="flex gap-3 mb-4">
+                                <Autocomplete
+                                    label={
+                                        <>
+                                            <b>Guest Name</b>
+                                        </>
                                     }
+                                    labelPlacement="outside"
+                                    placeholder="Search your name here"
+                                    description="If you don't see your name here, please click 'New Guest' button to register."
+                                    selectedKey={selectedGuestId}
+                                    onSelectionChange={setSelectedGuestId}
                                     isRequired
-                                />
-                            )}
-                        </div>
-                        <Spacer y={2} />
-                        <div className="flex gap-4 mb-4">
-                            <Input
-                                label={
-                                    <>
-                                        <b>Check In Time</b>
-                                    </>
-                                }
-                                placeholder="Check In"
-                                description="Please enter your check in time or click the button to check in."
-                                labelPlacement="outside"
-                                type="datetime-local"
-                                name="check_in_time"
-                                value={values.check_in_time}
-                                onChange={handleChange}
-                                isRequired
-                                onClear={() =>
-                                    setValues({ ...values, check_in_time: "" })
-                                }
-                            />
-                            <div className="hidden md:flex items-center text-sm text-gray-400 uppercase before:flex-[1_1_0%] before:border-t before:border-gray-200 before:me-6 after:flex-[1_1_0%] after:border-t after:border-gray-200 after:ms-6">
-                                Or
+                                    onInput={handleSearchChange}
+                                >
+                                    {searchValue &&
+                                        filteredGuests.map((guest) => (
+                                            <AutocompleteItem
+                                                key={guest.id}
+                                                value={guest.id}
+                                            >
+                                                {guest.name}
+                                            </AutocompleteItem>
+                                        ))}
+                                </Autocomplete>
+
+                                <GuestRegisterForm />
                             </div>
-                            <Button
-                                color="primary"
-                                variant="shadow"
-                                onClick={handleCheckIn}
-                                className="mt-6 "
-                            >
-                                Check In
-                            </Button>
-                        </div>
-                        <Spacer y={7} />
-                        <div className="flex justify-end gap-2">
-                            <Button
-                                size="lg"
-                                color="primary"
-                                variant="shadow"
-                                type="submit"
-                                startContent={
-                                    <HiOutlineSave className="w-6 h-6 text-success" />
-                                }
-                            >
-                                Submit
-                            </Button>
-                            <Button
-                                size="lg"
-                                color="danger"
-                                onClick={() => Inertia.visit("/")}
-                                startContent={<GrClose className="w-4 h-4" />}
-                            >
-                                Cancel
-                            </Button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            {showQrCode && (
-                <div className="fixed inset-0 flex items-center justify-center bg-[url(/assets/images/bg.png)] bg-cover bg-opacity-100 z-50 p-1">
-                    <div className="bg-white p-6 rounded-lg max-w-md space-y-4 w-full mx-4">
-                        <div className="flex justify-center">
-                            <h1 className="hidden md:block text-center">
-                                <span className="text-danger">*</span> Please
-                                capture this QR code using your mobile phone or
-                                print it out. This will be used for checking
-                                out.
-                            </h1>
-                            <h1 className="md:hidden text-center">
-                                <span className="text-danger">*</span> Please
-                                download this QR code or take a screenshot using
-                                your mobile phone. This will be used for
-                                checking out.
-                            </h1>
-                        </div>
-                        <div className="flex justify-center">
-                            <QRCode value={qrCodeUrl} size={350} />{" "}
-                            {/* Adjust size if needed */}
-                        </div>
-                        <div className="flex justify-end gap-2">
-                            <Button
-                                color="primary"
-                                variant="shadow"
-                                onClick={printQrCode}
-                                className="hidden sm:block"
-                            >
-                                <span className="flex items-center gap-1">
-                                    <FcPrint className="w-5 h-5 text-success" />
-                                    Print QR
-                                </span>
-                            </Button>
-                            <Button
-                                color="primary"
-                                variant="shadow"
-                                onClick={() => downloadQrCode(qrCodeUrl)}
-                                className="sm:hidden"
-                            >
-                                <span className="flex items-center gap-1">
-                                    <MdSimCardDownload className="w-6 h-6 text-success-400" />
-                                    Download QR
-                                </span>
-                            </Button>
-
-                            <Button
-                                startContent={<GrClose className="w-4 h-4" />}
-                                color="danger"
-                                onClick={handleClose}
-                            >
-                                Close
-                            </Button>
-                        </div>
+                            <Spacer y={2} />
+                            <div className="mb-4">
+                                <Select
+                                    label={
+                                        <>
+                                            <b>Meeting With</b>
+                                        </>
+                                    }
+                                    labelPlacement="outside"
+                                    placeholder="Select"
+                                    value={values.meeting_with}
+                                    onChange={(e) =>
+                                        setValues({
+                                            ...values,
+                                            meeting_with: e.target.value,
+                                        })
+                                    }
+                                >
+                                    {meetingWithOptions.map((option) => (
+                                        <SelectItem
+                                            key={option.value}
+                                            value={option.value}
+                                        >
+                                            {`${option.label} - ${option.position}`}
+                                        </SelectItem>
+                                    ))}
+                                </Select>
+                            </div>
+                            <Spacer y={2} />
+                            <div className="mb-4">
+                                <Select
+                                    label={
+                                        <>
+                                            <b>Purpose of Visit</b>
+                                        </>
+                                    }
+                                    labelPlacement="outside"
+                                    placeholder="Select"
+                                    value={values.purpose_of_visit}
+                                    onChange={handlePurposeChange}
+                                    isRequired
+                                >
+                                    {purposeOfVisitOptions.map((option) => (
+                                        <SelectItem
+                                            key={option.value}
+                                            value={option.value}
+                                        >
+                                            {option.label}
+                                        </SelectItem>
+                                    ))}
+                                </Select>
+                                <Spacer y={2} />
+                                {/* Render input for other purpose */}
+                                {values.purpose_of_visit === "Other" && (
+                                    <Input
+                                        placeholder="Please input your purpose of visit"
+                                        value={otherPurpose}
+                                        onChange={(e) =>
+                                            setOtherPurpose(e.target.value)
+                                        }
+                                        isRequired
+                                    />
+                                )}
+                            </div>
+                            <Spacer y={2} />
+                            <div className="flex gap-4 mb-4">
+                                <Input
+                                    label={
+                                        <>
+                                            <b>Check In Time</b>
+                                        </>
+                                    }
+                                    placeholder="Check In"
+                                    description={
+                                        <p className="check-in-time-description">
+                                            Please enter your check in time or
+                                            click the button to check in.
+                                        </p>
+                                    }
+                                    labelPlacement="outside"
+                                    type="datetime-local"
+                                    name="check_in_time"
+                                    value={values.check_in_time}
+                                    onChange={handleChange}
+                                    isRequired
+                                    onClear={() =>
+                                        setValues({
+                                            ...values,
+                                            check_in_time: "",
+                                        })
+                                    }
+                                />
+                                <div className="hidden md:flex items-center text-sm text-gray-400 uppercase before:flex-[1_1_0%] before:border-t before:border-gray-200 before:me-6 after:flex-[1_1_0%] after:border-t after:border-gray-200 after:ms-6">
+                                    Or
+                                </div>
+                                <Button
+                                    color="primary"
+                                    variant="shadow"
+                                    onClick={handleCheckIn}
+                                    className="mt-6 check-in-time-button"
+                                >
+                                    Check In
+                                </Button>
+                            </div>
+                            <Spacer y={7} />
+                            <div className="flex justify-end gap-2">
+                                <Button
+                                    size="lg"
+                                    color="primary"
+                                    variant="shadow"
+                                    type="submit"
+                                    startContent={
+                                        <HiOutlineSave className="w-6 h-6 text-success" />
+                                    }
+                                >
+                                    Submit
+                                </Button>
+                                <Button
+                                    size="lg"
+                                    color="danger"
+                                    onClick={() => Inertia.visit("/")}
+                                    startContent={
+                                        <GrClose className="w-4 h-4" />
+                                    }
+                                >
+                                    Cancel
+                                </Button>
+                            </div>
+                        </form>
                     </div>
                 </div>
-            )}
-        </div>
+
+                {showQrCode && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-[url(/assets/images/bg.png)] bg-cover bg-opacity-100 z-50 p-1">
+                        <div className="bg-white p-6 rounded-lg max-w-md space-y-4 w-full mx-4">
+                            <div className="flex justify-center">
+                                <h1 className="hidden md:block text-center">
+                                    <span className="text-danger">*</span>{" "}
+                                    Please capture this QR code using your
+                                    mobile phone or print it out. This will be
+                                    used for checking out.
+                                </h1>
+                                <h1 className="md:hidden text-center">
+                                    <span className="text-danger">*</span>{" "}
+                                    Please download this QR code or take a
+                                    screenshot using your mobile phone. This
+                                    will be used for checking out.
+                                </h1>
+                            </div>
+                            <div className="flex justify-center">
+                                <QRCode value={qrCodeUrl} size={350} />{" "}
+                                {/* Adjust size if needed */}
+                            </div>
+                            <div className="flex justify-end gap-2">
+                                <Button
+                                    color="primary"
+                                    variant="shadow"
+                                    onClick={printQrCode}
+                                    className="hidden sm:block"
+                                >
+                                    <span className="flex items-center gap-1">
+                                        <FcPrint className="w-5 h-5 text-success" />
+                                        Print QR
+                                    </span>
+                                </Button>
+                                <Button
+                                    color="primary"
+                                    variant="shadow"
+                                    onClick={() => downloadQrCode(qrCodeUrl)}
+                                    className="sm:hidden"
+                                >
+                                    <span className="flex items-center gap-1">
+                                        <MdSimCardDownload className="w-6 h-6 text-success-400" />
+                                        Download QR
+                                    </span>
+                                </Button>
+
+                                <Button
+                                    startContent={
+                                        <GrClose className="w-4 h-4" />
+                                    }
+                                    color="danger"
+                                    onClick={handleClose}
+                                >
+                                    Close
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+            <style jsx>{`
+                @media screen and (max-width: 385px) {
+                    .check-in-time-button,
+                    .check-in-time-description {
+                        display: none;
+                    }
+                }
+            `}</style>
+        </>
     );
 };
 
@@ -456,8 +483,9 @@ export const PrintableGuestPass = ({
     meetingWith,
     purposeOfVisit,
     checkInTime,
-    qrCodeUrl,
+    qrCode,
     guestPhoto,
+    expirationDate,
 }) => {
     return (
         <div
@@ -479,18 +507,18 @@ export const PrintableGuestPass = ({
                     position: "absolute",
                     top: "50%",
                     left: "50%",
-                    transform: 'translate(-50%, -50%) rotate(-30deg)',
-                    opacity: "0.2", // Adjust opacity to make it more subtle
-                    zIndex: "-1", // Behind the content
+                    transform: "translate(-50%, -50%) rotate(-30deg)",
+                    opacity: "0.2",
+                    zIndex: "-1",
                 }}
             >
                 <Image
-                    src="/assets/images/logo-new.png" // Replace with your logo path
+                    src="/assets/images/logo-new.png"
                     alt="Watermark Logo"
                     style={{
-                        width: "500px", // Adjust size as needed
-                        height: "auto", // Maintain aspect ratio
-                        pointerEvents: "none", // Ensure the logo doesn't interfere with clicks
+                        width: "500px",
+                        height: "auto",
+                        pointerEvents: "none",
                     }}
                 />
             </div>
@@ -538,19 +566,36 @@ export const PrintableGuestPass = ({
                             hour: "numeric",
                             minute: "numeric",
                             hour12: true,
+                        })}{" "}
+                        <br />
+                        <strong> Valid Until:</strong>{" "}
+                        {new Date(expirationDate).toLocaleString([], {
+                            year: "numeric",
+                            month: "numeric",
+                            day: "numeric",
+                            hour: "numeric",
+                            minute: "numeric",
+                            hour12: true,
                         })}
                     </p>
                 </div>
                 <div style={{ margin: "10px 0" }}>
                     <img
-                        src={qrCodeUrl}
+                        src={qrCode}
                         alt="QR Code"
-                        style={{ width: "120px", height: "120px" }}
+                        style={{ width: "130px", height: "130px" }}
                     />
                 </div>
                 <hr style={{ margin: "10px 0", width: "80%" }} />
-                <p style={{ textAlign: "center", marginTop: "5px" }}>
-                    Scan this QR code to check out.
+                <p
+                    style={{
+                        textAlign: "center",
+                        marginTop: "5px",
+                        fontSize: "12px",
+                    }}
+                >
+                    <span className="text-red font-bold">*</span>This pass must
+                    be worn at all times.
                 </p>
             </div>
         </div>

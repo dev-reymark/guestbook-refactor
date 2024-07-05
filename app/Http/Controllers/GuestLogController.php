@@ -36,6 +36,9 @@ class GuestLogController extends Controller
         // Fetch the guest's name
         $guest = Guest::findOrFail($guestId);
 
+        // Define QR code expiration time (24 hours in this case)
+        $expirationTime = Carbon::now()->addHours(24);
+
         $timestamp = Carbon::now()->timestamp;
         $qrCodeUrl = route('guest.log.show', ['guestLogId' => $guestLog->id, 'timestamp' => $timestamp]);
 
@@ -43,7 +46,8 @@ class GuestLogController extends Controller
             'guestLogId' => $guestLog->id,
             'qrCodeUrl' => $qrCodeUrl,
             'guestName' => $guest->name,
-            'guestPhoto' => $guest->photo
+            'guestPhoto' => $guest->photo,
+            'expirationDate' => $expirationTime->toIso8601String()
         ]);
     }
 

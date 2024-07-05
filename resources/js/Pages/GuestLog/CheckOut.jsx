@@ -90,142 +90,155 @@ const CheckOut = () => {
     }
 
     return (
-        <div className="min-h-screen bg-[url(/assets/images/bg.png)] bg-cover">
-            <Head title="Check Out" />
+        <>
+            <div className="min-h-screen bg-[url(/assets/images/bg.png)] bg-cover">
+                <Head title="Check Out" />
 
-            <Modal
-                isOpen={isOpen}
-                onOpenChange={onOpenChange}
-                placement="center"
-                hideCloseButton
-                isKeyboardDismissDisabled
-                isDismissable={false}
-            >
-                <ModalContent>
-                    {() => (
-                        <>
-                            <ModalHeader className="flex flex-col">
-                                <div className="text-center mb-5">
-                                    <h2 className="text-3xl font-bold mb-4 ">
-                                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary relative">
-                                            Visit Details
-                                            <span className="absolute  left-1/2 transform -translate-x-1/2 -bottom-2 h-[3px] w-16 bg-[#2aefe6]"></span>
-                                        </span>
-                                    </h2>
-                                    <p className="text-sm font-light">
-                                        Please click the button to check out.
-                                    </p>
-                                </div>
-                            </ModalHeader>
-                            <ModalBody>
-                                <div className="mb-4 space-y-4">
-                                    <Input
-                                        value={guestLog.guest.id}
-                                        label="Guest ID"
-                                        placeholder="Guest ID"
-                                        readOnly
-                                    />
-                                    <Input
-                                        value={guestLog.guest.name}
-                                        label="Guest Name"
-                                        placeholder="Guest Name"
-                                        readOnly
-                                    />
-                                    <Input
-                                        value={guestLog.meeting_with}
-                                        label="Meeting With"
-                                        placeholder="Meeting With"
-                                        readOnly
-                                    />
-                                    <Input
-                                        value={guestLog.purpose_of_visit}
-                                        label="Purpose of Visit"
-                                        placeholder="Purpose of Visit"
-                                        readOnly
-                                    />
-                                    <Input
-                                        value={new Date(
-                                            new Date(
-                                                guestLog.check_in_time
-                                            ).getTime() -
+                <Modal
+                    isOpen={isOpen}
+                    onOpenChange={onOpenChange}
+                    placement="center"
+                    hideCloseButton
+                    isKeyboardDismissDisabled
+                    isDismissable={false}
+                    scrollBehavior="outside"
+                >
+                    <ModalContent>
+                        {() => (
+                            <>
+                                <ModalHeader className="flex flex-col">
+                                    <div className="text-center mb-5">
+                                        <h2 className="text-3xl font-bold mb-4 ">
+                                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary relative">
+                                                Visit Details
+                                                <span className="absolute  left-1/2 transform -translate-x-1/2 -bottom-2 h-[3px] w-16 bg-[#2aefe6]"></span>
+                                            </span>
+                                        </h2>
+                                        <p className="text-sm font-light">
+                                            Please click the button to check
+                                            out.
+                                        </p>
+                                    </div>
+                                </ModalHeader>
+                                <ModalBody>
+                                    <div className="mb-4 space-y-4">
+                                        <Input
+                                            value={guestLog.guest.id}
+                                            label="Guest ID"
+                                            placeholder="Guest ID"
+                                            readOnly
+                                        />
+                                        <Input
+                                            value={guestLog.guest.name}
+                                            label="Guest Name"
+                                            placeholder="Guest Name"
+                                            readOnly
+                                        />
+                                        <Input
+                                            value={guestLog.meeting_with}
+                                            label="Meeting With"
+                                            placeholder="Meeting With"
+                                            readOnly
+                                        />
+                                        <Input
+                                            value={guestLog.purpose_of_visit}
+                                            label="Purpose of Visit"
+                                            placeholder="Purpose of Visit"
+                                            readOnly
+                                        />
+                                        <Input
+                                            value={new Date(
                                                 new Date(
                                                     guestLog.check_in_time
-                                                ).getTimezoneOffset() *
-                                                    60000
-                                        ).toLocaleString([], {
-                                            year: "numeric",
-                                            month: "numeric",
-                                            day: "numeric",
-                                            hour: "numeric",
-                                            minute: "numeric",
-                                            hour12: true,
-                                        })}
-                                        label="Check In Time"
-                                        placeholder="Check In Time"
-                                        readOnly
-                                    />
-                                    <Input
-                                        value={
-                                            guestLog.check_out_time
-                                                ? new Date(
-                                                      new Date(
-                                                          guestLog.check_out_time
-                                                      ).getTime() -
+                                                ).getTime() -
+                                                    new Date(
+                                                        guestLog.check_in_time
+                                                    ).getTimezoneOffset() *
+                                                        60000
+                                            ).toLocaleString([], {
+                                                year: "numeric",
+                                                month: "numeric",
+                                                day: "numeric",
+                                                hour: "numeric",
+                                                minute: "numeric",
+                                                hour12: true,
+                                            })}
+                                            label="Check In Time"
+                                            placeholder="Check In Time"
+                                            readOnly
+                                        />
+                                        <Input
+                                            value={
+                                                guestLog.check_out_time
+                                                    ? new Date(
                                                           new Date(
                                                               guestLog.check_out_time
-                                                          ).getTimezoneOffset() *
-                                                              60000
-                                                  ).toLocaleString([], {
-                                                      year: "numeric",
-                                                      month: "numeric",
-                                                      day: "numeric",
-                                                      hour: "numeric",
-                                                      minute: "numeric",
-                                                      hour12: true,
-                                                  })
-                                                : "Not checked out yet"
-                                        }
-                                        label="Check Out Time"
-                                        placeholder="Check Out Time"
-                                        readOnly
-                                        color="warning"
-                                    />
-                                    <div className="flex justify-end gap-2">
-                                        {!guestLog.check_out_time && (
+                                                          ).getTime() -
+                                                              new Date(
+                                                                  guestLog.check_out_time
+                                                              ).getTimezoneOffset() *
+                                                                  60000
+                                                      ).toLocaleString([], {
+                                                          year: "numeric",
+                                                          month: "numeric",
+                                                          day: "numeric",
+                                                          hour: "numeric",
+                                                          minute: "numeric",
+                                                          hour12: true,
+                                                      })
+                                                    : "Not checked out yet"
+                                            }
+                                            label="Check Out Time"
+                                            placeholder="Check Out Time"
+                                            readOnly
+                                            color="warning"
+                                        />
+                                        <div className="flex justify-end gap-2">
+                                            {!guestLog.check_out_time && (
+                                                <Button
+                                                    size="lg"
+                                                    variant="shadow"
+                                                    color="primary"
+                                                    onClick={handleCheckOut}
+                                                    disabled={isCheckingOut}
+                                                    startContent={
+                                                        <TbLogout className="w-7 h-7 text-success button-icon" />
+                                                    }
+                                                >
+                                                    {isCheckingOut
+                                                        ? "Checking Out..."
+                                                        : "Check Out"}
+                                                </Button>
+                                            )}
+
                                             <Button
                                                 size="lg"
-                                                variant="shadow"
-                                                color="primary"
-                                                onClick={handleCheckOut}
-                                                disabled={isCheckingOut}
+                                                onPress={() =>
+                                                    Inertia.visit("/")
+                                                }
+                                                color="danger"
                                                 startContent={
-                                                    <TbLogout className="w-7 h-7 text-success" />
+                                                    <GrClose className="w-4 h-4" />
                                                 }
                                             >
-                                                {isCheckingOut
-                                                    ? "Checking Out..."
-                                                    : "Check Out"}
+                                                Cancel
                                             </Button>
-                                        )}
-
-                                        <Button
-                                            size="lg"
-                                            onPress={() => Inertia.visit("/")}
-                                            color="danger"
-                                            startContent={
-                                                <GrClose className="w-4 h-4" />
-                                            }
-                                        >
-                                            Cancel
-                                        </Button>
+                                        </div>
                                     </div>
-                                </div>
-                            </ModalBody>
-                        </>
-                    )}
-                </ModalContent>
-            </Modal>
-        </div>
+                                </ModalBody>
+                            </>
+                        )}
+                    </ModalContent>
+                </Modal>
+            </div>
+            <style jsx>{`
+                @media screen and (max-width: 320px) {
+                    .button-icon {
+                        display: none;
+                    }
+                }
+            `}</style>
+        </>
     );
 };
 
