@@ -491,38 +491,14 @@ export const PrintableGuestPass = ({
         <div
             style={{
                 position: "relative",
-                padding: "10px",
                 fontFamily: "Arial, sans-serif",
-                width: "70mm",
-                maxWidth: "70mm",
                 wordWrap: "break-word",
-                // backgroundColor: "#f0f0f0",
+                backgroundColor: "#f0f0f0",
                 border: "1px solid #ccc",
                 borderRadius: "8px",
+                padding: "5px",
             }}
         >
-            {/* Watermark Logo */}
-            <div
-                style={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%) rotate(-30deg)",
-                    opacity: "0.2",
-                    zIndex: "-1",
-                }}
-            >
-                <Image
-                    src="/assets/images/logo-new.png"
-                    alt="Watermark Logo"
-                    style={{
-                        width: "500px",
-                        height: "auto",
-                        pointerEvents: "none",
-                    }}
-                />
-            </div>
-
             {/* Content of the Guest Pass */}
             <div
                 style={{
@@ -531,9 +507,7 @@ export const PrintableGuestPass = ({
                     alignItems: "center",
                 }}
             >
-                <h2 style={{ textAlign: "center", margin: "10px 0" }}>
-                    VISITOR
-                </h2>
+                <h2>VISITOR</h2>
                 {guestPhoto && (
                     <div style={{ textAlign: "center", marginBottom: "10px" }}>
                         <img
@@ -548,11 +522,15 @@ export const PrintableGuestPass = ({
                         />
                     </div>
                 )}
-                <p style={{ textAlign: "center", marginBottom: "5px" }}>
-                    Hello, I'm {guestName}
-                </p>
-                <hr style={{ margin: "10px 0", width: "80%" }} />
-                <div style={{ textAlign: "left", margin: "5px 10px" }}>
+                <p style={{ marginTop: "-5px" }}>Hello, I'm {guestName}</p>
+                <hr
+                    style={{
+                        width: "68%",
+                        marginTop: "-5px",
+                        border: ".5px solid black",
+                    }}
+                />
+                <div style={{ fontSize: "12px", marginTop: "-8px" }}>
                     <p>
                         <strong>Guest ID:</strong> {guestID} <br />
                         <strong>Meeting With:</strong> {meetingWith} <br />
@@ -579,23 +557,23 @@ export const PrintableGuestPass = ({
                         })}
                     </p>
                 </div>
-                <div style={{ margin: "10px 0" }}>
+                <div style={{ margin: "10px 0", marginTop: "-6px" }}>
                     <img
                         src={qrCode}
                         alt="QR Code"
-                        style={{ width: "130px", height: "130px" }}
+                        style={{ width: "100px", height: "100px" }}
                     />
                 </div>
-                <hr style={{ margin: "10px 0", width: "80%" }} />
+
                 <p
                     style={{
                         textAlign: "center",
                         marginTop: "5px",
-                        fontSize: "12px",
+                        fontSize: "10px",
                     }}
                 >
-                    <span className="text-red font-bold">*</span>This pass must
-                    be worn at all times.
+                    <span style={{ color: "red" }}>*</span>This pass must be
+                    worn at all times.
                 </p>
             </div>
         </div>
